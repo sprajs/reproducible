@@ -13,14 +13,18 @@ individual files; there is no recursive directory upload. Exclude reliably
 redownloadable source inputs, cheap regenerated products, caches, build trees and
 credentials. Keep immutable upstream URL/version/hash acquisition references in
 the attempt record instead of copying those source bytes. Review third-party
-rights and each selected file for credentials and private workstation paths
-before marking redistribution approved. The tool rejects common credential paths;
+rights and each selected file for credentials before marking redistribution
+approved. The tool rejects common credential paths;
 it cannot infer rights, scientific value, secret contents or regeneration cost.
 
 Use relative POSIX paths in inventories and portable bucket/prefix/region config.
 Absolute local paths are never recorded by this helper. Existing historical bytes
-are not rewritten: if they contain private paths or secrets, prepare a reviewed
-portable evidence record and retain its derivation identity before selection.
+are not rewritten: actual observed runtime paths in full provenance remain
+legitimate evidence. Executable scripts and configuration must derive their
+current roots rather than depend on an original workstation. New run artifacts
+should include logical paths relative to their attempt root so consumers can
+use restored evidence while retaining original observed paths separately. Secret
+contents must be excluded from selection.
 Do not export AWS keys, profiles or credential-file contents. AWS authentication
 uses boto3's standard runtime credential chain (workload role, SSO/profile or
 environment supplied outside Git). Install `boto3` in the runtime environment;
