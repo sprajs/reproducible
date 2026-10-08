@@ -68,14 +68,16 @@ Use [the common named layout](docs/shared-data.md), `storage-layout.json` and
 URI/SHA256/VersionId and format; the discovery pointer is not a scientific pin.
 Keep the transport copies/config/tests in all three repositories aligned.
 
-Use [the shared S3 guide](docs/cloud-storage.md) and `scripts/cloud_storage.py`
-for working snapshots. For selected scientific evidence use the
-[exact-version archive](docs/archive.md) with `archive-storage.json`.
-Check access/readiness first. Use the restricted `research`
-profile; never root. Save completed and failed attempts with `push`, retaining
-the returned snapshot and manifest SHA-256. Restore only with the pinned hash.
-Keep credentials out of source, prompts and receipts. Local controller paths
-remain working copies; cloud preservation is complete only after byte checks.
+Save completed and failed attempts with `research_storage.py push` under the
+named experiment collection, retaining the exact manifest URI/SHA256/VersionId.
+Restore by those pins and the declared format. The [shared S3 guide](docs/cloud-storage.md)
+and `scripts/cloud_storage.py` retain historical snapshot recovery only; do not
+start new UUID snapshot collections. Selected scientific evidence keeps the
+[exact-version archive](docs/archive.md) and `archive-storage.json` route.
+Check access/readiness first. Use the restricted `research` profile locally or
+the configured restricted ambient cloud identity; never root. Keep credentials
+out of source, prompts and receipts. Local controller paths remain working
+copies; cloud preservation is complete only after byte checks.
 
 ## Contributions and PRs
 

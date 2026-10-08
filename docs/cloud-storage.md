@@ -19,8 +19,9 @@ and `shared/`. No root credentials belong in a research task or cloud setting.
 For selected scientific evidence, use the existing [exact-version archive
 workflow](archive.md) with [archive-storage.json](../archive-storage.json).
 It records individual S3 versions and enforces explicit evidence selection.
-The directory snapshot commands below preserve working input/attempt directories
-and the initial recovery snapshots; they do not replace those evidence rules.
+New working attempts use the named collections below. The historical directory
+snapshot commands retain the initial recovery route; they do not replace those
+evidence rules.
 
 ## Named shared data
 
@@ -29,7 +30,7 @@ readable dataset/experiment/evidence collections and exact-version restores.
 The historical snapshot commands below remain the recovery route for their
 original receipts; the catalog provides readable aliases without deleting them.
 
-## Local commands
+## Historical snapshot recovery
 
 Install [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 and [rclone](https://rclone.org/install/). Use Python 3.11 or newer. This host has
@@ -43,11 +44,10 @@ cloud environments. The cloud identity has a separate key.
 ```sh
 python scripts/cloud_storage.py status
 python scripts/cloud_storage.py list
-python scripts/cloud_storage.py push results/experiment/attempt --label experiment-attempt
 python scripts/cloud_storage.py pull SNAPSHOT_ID data/restored --manifest-sha256 MANIFEST_SHA256
 ```
 
-`push` creates a fresh attempt prefix, hashes the source files, uploads them,
+The historical `push` operation (retained for compatibility, not new work) creates a fresh attempt prefix, hashes the source files, uploads them,
 reads every remote file back to calculate SHA-256, rechecks the source, then
 uploads a manifest as the completion marker. It prints the snapshot identifier
 and manifest hash and saves them in ignored `.work/storage/receipts/`.
@@ -66,14 +66,15 @@ contract: this preserves named regular-file bytes. Symlinks, special files and
 unsafe paths are refused. Commands are bounded to one hour per subprocess;
 two concurrent file transfers and two concurrent multipart parts are used.
 
-Use `--namespace prospector` before the command to archive a deliberately selected
-Prospector source/cache directory, or `--namespace shared` for common inputs.
+For historical recovery, `--namespace prospector` or `--namespace shared` before
+the command selects that snapshot namespace. New data uses the named transport.
 Do not upload an entire home directory, `.aws/`, `.env` files, a virtual environment,
 or a repo's mixed `.work/` directory. Source permissions still apply to private
 cloud copies. This bucket does not publish papers or provide a public website.
 
 Inputs and run outputs are staged locally for the compiled controllers. After a
-run, snapshot its complete attempt directory, including failures. This transport
+run, publish its deliberately selected complete attempt with `research_storage.py
+push` under the named experiment collection, including failures. This transport
 does not change historical SDK/request pins, scientific gates, or the runner's
 execution interface. An upload is not scientific qualification. A private S3 URI
 also does not replace a public durable research archive/DOI for publication.
@@ -111,7 +112,7 @@ Keep environment access set to **Only me** and rotate the key if access changes.
 Install AWS CLI and rclone in the environment, then run:
 
 ```sh
-python /workspace/reproducible/scripts/cloud_storage.py --ambient-credentials status
+python /workspace/reproducible/scripts/storage_startup.py --ambient-credentials
 ```
 
 The helper automatically uses standard AWS environment credentials when set.
