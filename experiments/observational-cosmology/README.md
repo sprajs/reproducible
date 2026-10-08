@@ -23,9 +23,37 @@ helper retains a common ordered principal submatrix on both axes; this native
 consumer deliberately supports only the full13 selection. These data are fitted
 distance summaries with reconstruction/fiducial calibration, not raw galaxies.
 
-From a fresh checkout, install Python 3.11+, `uv`, a C/C++ compiler, Fortran,
-BLAS/LAPACK development libraries and standard build tools. Runtime bootstrap
-details and concrete platform requirements are documented by its help output.
+The executed build baseline is **Debian 13 x86_64, Linux ELF with glibc and
+`ldd`**. The bootstrap requires Python 3.11+ available as `python`, `uv`, GNU
+`make`, CMake ≥3.24, C and C++20 compilers available as `cc`/`c++`, and the
+`ld`/`ar` binutils. The official PLC build also needs a Fortran compiler,
+BLAS/LAPACK and CFITSIO development files. Its linker resolves these exact
+runtime SONAMEs through `cc -print-file-name`: `liblapack.so.3`, `libblas.so.3`,
+`libcfitsio.so.10` and `libgfortran.so.5`; `ldd` must resolve every resulting
+shared dependency.
+
+On Debian 13, install the system prerequisites before running the recipe:
+
+```sh
+sudo apt-get update
+sudo apt-get install build-essential cmake gfortran libblas-dev liblapack-dev \
+  libcfitsio-dev libc-bin python3 python3-venv python-is-python3 ca-certificates
+```
+
+These development packages pull in the runtime libraries, including Debian 13's
+`libcfitsio10t64` package providing `libcfitsio.so.10`. Install `uv` using its
+[installation instructions](https://docs.astral.sh/uv/getting-started/installation/).
+An existing compatible CMake outside `PATH` can be selected with
+`--cmake /absolute/path/to/cmake` on the bootstrap command.
+
+The script has a pinned **Debian 13 x86_64-only** fallback when the Fortran
+compiler or `/usr/include/fitsio.h` is missing: it uses `dpkg-deb` to extract
+the compiler/development headers into the ignored runtime's `tools/` directory.
+Required runtime SONAMEs and the other build tools must already be available.
+This Linux/glibc recipe needs a separately reviewed build route for macOS or
+other libc/architecture combinations; the recorded execution remains the named
+Debian baseline.
+
 Use one local build/job, with OMP/BLAS set to one:
 
 ```sh
