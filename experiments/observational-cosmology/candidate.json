@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "kind": "candidate_design",
+  "design_id": "candidate-constant-w-smooth-fluid-v1",
+  "title": "Flat constant-w fluid with CLASS PPF closure",
+  "paper_ids": [
+    "arxiv:2503.14738v3"
+  ],
+  "idea_ids": [
+    "constant-w-smooth-fluid-source-subclass"
+  ],
+  "review_id": "2026-10-08-constant-w-sn-targeted-source-claims",
+  "readiness": "needs_review",
+  "faithful_claim": "The DESI dark-energy parameterization admits a constant-w subclass. Replacing Lambda with a separately conserved w=-0.9 component defines a distinct flat GR background. A smooth CLASS PPF closure and fixed-reference conditional H0 test are declared consumer choices, not DESI fitted values or author scalar dynamics.",
+  "equations": [
+    {
+      "expression": "w(a)=w0+wa*(1-a); wa=0 => w(a)=w0",
+      "locator": "DESI HTML S1.E8-S1.E10 and S1.p6.3: CPL and constant-w subclass",
+      "paper_id": "arxiv:2503.14738v3",
+      "definitions": "a=1/(1+z), a(today)=1; w=p_de/rho_de; w0 and wa dimensionless.",
+      "domain": "Flat GR FLRW; chosen w0=-0.9,wa=0 never crosses w=-1.",
+      "status": "reviewed_transcription"
+    },
+    {
+      "expression": "rho_de(z)/rho_de(0)=(1+z)^(3*(1+w0))",
+      "locator": "DESI HTML S1.E10, wa=0 specialization",
+      "paper_id": "arxiv:2503.14738v3",
+      "definitions": "Separate conservation d rho_de/d ln a=-3(1+w0)rho_de; density relative to its current positive value.",
+      "domain": "Noninteracting homogeneous fluid at a>0; chosen w0=-0.9 gives exponent0.3.",
+      "status": "reviewer_derived"
+    },
+    {
+      "expression": "H(z)^2/H0^2=Omega_bc*(1+z)^3+Omega_gamma*(1+z)^4+rho_ur(z)/rho_crit,0+rho_ncdm(z)/rho_crit,0+Omega_fld*(1+z)^(3*(1+w0))",
+      "locator": "Flat specialization of DESI HTML S1.EGx2 (Eq6); CLASS thermal species retained separately",
+      "paper_id": "arxiv:2503.14738v3",
+      "definitions": "Omega_bc=Omega_b+Omega_cdm; all densities use current critical density. Massive-neutrino thermal interpolation is computed by pinned CLASS; spatial curvature and Lambda are zero.",
+      "domain": "Same source-state species and finite positive-flatness branch as pinned external CLASS reference.",
+      "status": "reviewer_derived"
+    }
+  ],
+  "assumptions": [
+    "One GR metric, flat FLRW and separate energy conservation; replace Lambda only.",
+    "Retain the explicit baryon/CDM/neutrino/photon, helium, HyRec, reionization, primordial and output state from the pinned external CLASS reference; no native Irreducible CMB claim.",
+    "Use CLASS phenomenological PPF perturbation closure with explicit cs2=1,c_gamma=0.4 and adiabatic initial conditions.",
+    "w0=-0.9 is a chosen example, not a DESI posterior mean or fitted scalar-field parameter.",
+    "At each H0 point recompute fractional density/flatness closure from fixed physical densities, including actual present massive-neutrino density."
+  ],
+  "minimal_test": {
+    "question": "Does the separately conserved constant-w branch change the conditional H0 fit to the same released DESI full13 BAO vector, and how do its separate primary-CMB scores compare?",
+    "observables": [
+      "DESI thirteen full-covariance DM/rd,DH/rd,DV/rd coordinates",
+      "H(z),luminosity/comoving distances and predicted drag ruler",
+      "Lensed CMB TT/EE/TE",
+      "Separate linear and Halofit matter spectra"
+    ],
+    "parameter_choices": {
+      "identity": "flat-constant-w-smooth-fluid-class-v1",
+      "source_parameterization": "w(a)=w0+wa*(1-a); constant-w subclass wa=0",
+      "chosen_inputs": {
+        "w0_fld": "-0.9",
+        "wa_fld": "0",
+        "cs2_fld": "1",
+        "use_ppf": "yes",
+        "c_gamma_over_c_fld": "0.4",
+        "Omega_k": "0",
+        "Omega_Lambda": "0",
+        "Omega_scf": "0",
+        "fluid_equation_of_state": "CLP"
+      },
+      "omitted_parameters": [
+        "Omega_fld"
+      ],
+      "closure": "CLASS infers Omega_fld=1-Omega_k-Omega_b-Omega_cdm-Omega_gamma-Omega_ur-Omega_ncdm using current thermal neutrino density; no copied Planck Omega_m.",
+      "retained_reference": {
+        "repository": "sprajs/reproducible",
+        "revision": "6c2aa04c946052db4a39c05c3edb15d56b94ce26",
+        "path": "experiments/lcdm-reference/reference.json",
+        "sha256": "f0d5e9f58c0cdcc94cbc04200d6cdd5667147fb8e733edeeda1ceb012bb93444",
+        "retained_parameters": {
+          "H0": "67.32117",
+          "omega_b": "0.02238280",
+          "omega_cdm": "0.1201075",
+          "T_cmb": "2.7255",
+          "N_ur": "2.046",
+          "N_ncdm": "1",
+          "m_ncdm": "0.06",
+          "T_ncdm": "0.7137658555036082",
+          "deg_ncdm": "1",
+          "ksi_ncdm": "0",
+          "Omega_k": "0",
+          "Omega_fld": "0",
+          "Omega_scf": "0",
+          "YHe": "0.2454006",
+          "recombination": "HyRec",
+          "reio_parametrization": "reio_camb",
+          "tau_reio": "0.05430842",
+          "reionization_exponent": "1.5",
+          "reionization_width": "0.5",
+          "helium_fullreio_redshift": "3.5",
+          "helium_fullreio_width": "0.5",
+          "P_k_ini type": "analytic_Pk",
+          "A_s": "2.100549e-09",
+          "n_s": "0.9660499",
+          "alpha_s": "0",
+          "k_pivot": "0.05",
+          "modes": "s",
+          "ic": "ad",
+          "gauge": "synchronous",
+          "output": "tCl,pCl,lCl,mPk",
+          "lensing": "yes",
+          "non linear": "halofit",
+          "l_max_scalars": "2508",
+          "P_k_max_1/Mpc": "1",
+          "z_pk": "0,0.38,0.51,0.61",
+          "format": "class",
+          "headers": "yes",
+          "write_background": "yes",
+          "write_thermodynamics": "yes",
+          "write_parameters": "yes",
+          "write_warnings": "yes",
+          "overwrite_root": "yes",
+          "input_verbose": "1",
+          "background_verbose": "1",
+          "thermodynamics_verbose": "1",
+          "perturbations_verbose": "1",
+          "transfer_verbose": "1",
+          "primordial_verbose": "1",
+          "harmonic_verbose": "1",
+          "fourier_verbose": "1",
+          "lensing_verbose": "1",
+          "output_verbose": "1"
+        },
+        "required_removal": "Remove inherited Omega_fld=0 before merging chosen inputs; H0 becomes the one fitted coordinate, all other physical inputs remain fixed."
+      },
+      "class_revision": "0ceb7a9a4c1e444ef5d5d56a8328a0640be91b18",
+      "class_tag": "v3.3.0",
+      "free_coordinate": {
+        "name": "H0",
+        "unit": "km s^-1 Mpc^-1",
+        "role": "One conditional fitted coordinate; consumer predeclares finite bounds and convergence budget."
+      },
+      "perturbation_identity": "CLASS approximate PPF phenomenological closure, cs2=1,c_gamma=0.4, with nonzero fluid perturbations; not a scalar potential/microphysical model."
+    },
+    "scope": "Same dedicated Reproducible external CLASS prediction and retained-product official-clik workflow as LCDM. One conditional H0 fit to full13 DESI covariance, with all other physical/nuisance inputs fixed. Display BAO and primary CMB separately; SN remains separately conditional on its source contract."
+  },
+  "simplifications": [
+    "No fitted w0/wa, full joint posterior, model evidence, Hubble-tension solution or independence claim.",
+    "PPF closure is a separately declared phenomenological model; no source scalar-potential reconstruction or EDE/NEDE/timescape replacement.",
+    "Source-reviewed equations and actual numerical acceptance are separate; current native Irreducible fluid/CMB/likelihood capability remains unimplemented.",
+    "Full main texts/figures/appendices are unread in this targeted task; ordinary paper stages stay queued."
+  ],
+  "data_dependencies": [
+    {
+      "paper_id": "arxiv:2503.14738v3",
+      "kind": "released fitted BAO compression",
+      "role": "Same exact13-coordinate mean/full covariance/order as consumer LCDM control; seven baseline tracer samples, superseded rows excluded. Not raw clustering or a cosmological posterior."
+    },
+    {
+      "repository": "sprajs/reproducible",
+      "kind": "pinned external reference construction",
+      "role": "Source-example thermal/primordial input state and official primary-CMB release identities retained; its original primary-plus-lensing conditioning is not a prior or a new primary-only best fit."
+    }
+  ],
+  "unknowns": [
+    "Consumer-specific validation, finite H0 bounds and convergence/precision budget pending explicit acceptance.",
+    "Unknown cross-probe covariance and release selection conditioning prevent a joint posterior claim."
+  ],
+  "verification_gates": [
+    "Targeted Sol original-source audit accepts exact idea/design/prospect IDs and source/code hashes.",
+    "Consumer accepts candidate digest and pins external CLASS reference/build/runtime/configuration; remove Omega_fld and fail on unconsumed or altered controls.",
+    "Same release axes, covariance, units and full13 BAO controls for both branches; positive closure and known source domain required.",
+    "Retain failed attempts and numerical-refinement differences; official primary-CMB getter/test-vector checks and support guards remain separate.",
+    "Record conditional fit bounds, returned convergence diagnostics and data/parameter conditioning before interpretation."
+  ],
+  "falsification": "An unconsumed control, negative inferred fluid density, mismatched release identity/axis, failed precision/support gate or numerical discrepancy outside the predeclared consumer budget refuses that attempt. A better conditional score is not evidence for a complete physical mechanism.",
+  "consumer": {
+    "repository": "sprajs/reproducible",
+    "revision": "6c2aa04c946052db4a39c05c3edb15d56b94ce26",
+    "dirty": null,
+    "capability_status": "Dedicated external CLASS v3.3.0 path supplies full thermal species, PPF fluid perturbations, recombination, CMB/matter/background/drag predictions. Native Irreducible at c50590c2d7f2c44de5473a40ceac1ea76c9f729f has no faithful constant-w CMB closure.",
+    "recipe_runner_status": "Same dedicated external reference prediction and official retained-product primary-clik adapters; no Irreducible CLI or arbitrary equation execution."
+  },
+  "blockers": [
+    "Consumer validation and execution gate not yet recorded in this source handoff."
+  ],
+  "executable_request": null,
+  "qualification": {
+    "numerically_executed": false,
+    "scientifically_qualified": false,
+    "reason": "Immutable proposed source handoff. Consumer execution/results belong to Reproducible; no full source reading or independent reproduction claimed."
+  }
+}

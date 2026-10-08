@@ -64,6 +64,14 @@ shared physical equations and numerical kernels in Irreducible.
 
 ## Real-data native reference control
 
+[The observational cosmology experiment](experiments/observational-cosmology/README.md)
+adds a fresh-checkout acquisition/build recipe and a bounded conditional H₀ fit
+to the exact DESI DR2 full13 Gaussian compression, for pinned CLASS ΛCDM and a
+declared constant-w alternative. It retains full covariance, predictions, native
+scores, plots and failure manifests. Optional official Planck primary scores
+remain separate from the DESI fit; the numerical search bracket is not a
+posterior uncertainty.
+
 [The LCDM baseline audit](experiments/lcdm-baseline/README.md) uses the installed
 Irreducible C++ SDK on exact ordered 13-row DESI DR2 Gaussian BAO compression.
 Its bounded experiment-specific controller compares distances, ratios and the

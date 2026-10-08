@@ -1,0 +1,62 @@
+{
+  "schema": "observational-cosmology-design/v1",
+  "question": "What bounded conditional H0 likelihood minima do flat LCDM and one explicitly fixed constant-w extension produce for the full DESI DR2 Gaussian BAO compression?",
+  "class_revision": "0ceb7a9a4c1e444ef5d5d56a8328a0640be91b18",
+  "native_sdk_revision": "7a006f81a36a70cdcd3187a1298a8a1ea2cf3f39",
+  "candidate_source": {
+    "repository": "sprajs/prospector", "revision": "99673d5ddb457732c1660a586305eb8b98de5eb6",
+    "path": "designs/candidate-constant-w-smooth-fluid-v1.json", "snapshot": "candidate.json",
+    "sha256": "ea15c707b8bbfa53e2b50bab095f5729aec6a99334388bd0fc4cf061e0442414",
+    "readiness_at_handoff": "needs_review; consumer execution recorded separately"
+  },
+  "base_parameters": "../lcdm-reference/reference.json:parameters; same physical densities, 0.06 eV thermal relic, recombination, primordial and reionization state",
+  "models": {
+    "lcdm": {"Omega_k": "0", "Omega_fld": "0", "Omega_scf": "0", "closure": "CLASS infers Lambda density"},
+    "constant-w": {
+      "Omega_k": "0", "Omega_Lambda": "0", "Omega_scf": "0",
+      "Omega_fld": "omitted so CLASS infers fluid density from closure",
+      "fluid_equation_of_state": "CLP", "w0_fld": "-0.9", "wa_fld": "0",
+      "cs2_fld": "1", "use_ppf": "yes", "c_gamma_over_c_fld": "0.4",
+      "interpretation": "A chosen constant-w subclass of source-defined CPL, not a paper best fit or native alternative qualification"
+    }
+  },
+  "fit": {
+    "parameter": "H0", "units": "km/s/Mpc", "domain": [55, 85],
+    "conditioned_coordinates": "All other base physical, species, nuisance and alternative-fluid coordinates fixed",
+    "target": "DESI DR2 released full13 fitted BAO compression with full13 covariance",
+    "selection_indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    "ruler": "Same evaluated CLASS state's predicted thermal drag horizon; no supplied drag redshift",
+    "native_gaussian": "Existing reviewed lcdm-bao-reference consumer, one arbitrary mean under anchor transport per process",
+    "profiles": {
+      "quick": {"grid_count": 9, "h0_tolerance": 0.05, "max_refinements": 20},
+      "broader": {"grid_count": 31, "h0_tolerance": 0.01, "max_refinements": 28}
+    },
+    "optimizer": "Uniform grid, adjacent interior bracket, deterministic golden-section minimization; finite-resolution conditional result",
+    "priors": null,
+    "posterior_or_confidence_interval": null
+  },
+  "optional_separate_planck_score": {
+    "backend": "Official PLC3.01 C API",
+    "components": ["Commander low-l TT", "SimAll low-l EE", "Plik-lite TTTEEE"],
+    "nuisance": {"A_planck": 1.0},
+    "prior": "Separate relative calibration penalty at fixed A_planck=1",
+    "evaluated_points": "Each DESI-conditional best evaluated H0",
+    "lensing_likelihood_included": false,
+    "joint_target": null
+  },
+  "limits": {
+    "local_jobs": 1, "omp_and_blas_threads": 1,
+    "whole_attempt_wall_seconds": 3600, "class_case_wall_seconds": 180,
+    "class_address_bytes": 2147483648, "attempt_bytes": 2147483648
+  },
+  "qualification_limits": [
+    "These are conditional fits to released fitted distance summaries, not fits to original galaxy observations.",
+    "Finite optimizer brackets do not prove a global minimum or define an uncertainty interval.",
+    "Emitted CLASS table interpolation and source-supplied precision have no certified error bound here.",
+    "Each full-output final prediction is rescored; its difference from the background-only fit policy is recorded explicitly.",
+    "CMB, BAO, SN and overlapping SH0ES summaries are never multiplied into a joint target by this workflow.",
+    "Original SN covariance refusal and separately named symmetric working profile remain unchanged.",
+    "Unit-test synthetic controls are excluded from observed data and reported scores.",
+    "CLASS external-reference execution does not establish native Irreducible CMB or constant-w physics."
+  ]
+}
