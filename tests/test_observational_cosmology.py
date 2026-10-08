@@ -52,6 +52,7 @@ class ObservationalCosmologyTests(unittest.TestCase):
                          ("-0.9", "0", "1", "yes"))
         self.assertEqual(p["m_ncdm"], "0.06")
         self.assertEqual(controller.parameters("lcdm", 68)["omega_b"], p["omega_b"])
+        self.assertNotIn("non linear", controller.parameters("lcdm", 68))
 
     def test_actual_new_input_renderer_admits_changed_h0_and_output_policy(self):
         for model in controller.MODELS:

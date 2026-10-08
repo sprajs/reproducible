@@ -102,7 +102,10 @@ def parameters(model, h0, *, full=False):
                        "w0_fld": "-0.9", "wa_fld": "0", "cs2_fld": "1",
                        "use_ppf": "yes", "c_gamma_over_c_fld": "0.4"})
     if not full:
-        result.update({"output": "", "lensing": "no", "non linear": "none",
+        # CLASS rejects any present non-linear key without perturbations,
+        # including the string "none". Omission selects its source default.
+        del result["non linear"]
+        result.update({"output": "", "lensing": "no",
                        "write_thermodynamics": "no"})
     return result
 
