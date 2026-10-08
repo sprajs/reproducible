@@ -111,13 +111,14 @@ class ObservationalCosmologyTests(unittest.TestCase):
             inputs = root / "restored"
             inputs.mkdir()
             runtime = root / "runtime.json"
-            runtime.write_text("{}")
+            runtime.write_text('{"class": {}}')
             data = {"source_identities": [{"sha256": "fixture"}]}
             deadline = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=2)).isoformat()
             with mock.patch.object(controller, "source_state", return_value={}), \
                     mock.patch.object(controller, "verify_runtime", return_value={}), \
                     mock.patch.object(controller.bao, "read_data", return_value=data) as reader, \
-                    mock.patch.object(controller, "select_data", side_effect=ValueError("fixture stops before physics")):
+                    mock.patch.object(controller, "select_data", return_value={"fixture": True}), \
+                    mock.patch.object(controller, "class_case", side_effect=ValueError("fixture stops before physics")):
                 result = controller.execute(runtime, root / "attempt", "quick", deadline, input_root=inputs)
             self.assertEqual(reader.call_args_list, [mock.call(str(inputs)), mock.call(str(inputs))])
             self.assertEqual(result["input_root"], str(inputs))
