@@ -26,8 +26,9 @@ distance summaries with reconstruction/fiducial calibration, not raw galaxies.
 The executed build baseline is **Debian 13 x86_64, Linux ELF with glibc and
 `ldd`**. The bootstrap requires Python 3.11+ available as `python`, `uv`, GNU
 `make`, CMake ≥3.24, C and C++20 compilers available as `cc`/`c++`, and the
-`ld`/`ar` binutils. The official PLC build also needs a Fortran compiler,
-BLAS/LAPACK and CFITSIO development files. Its linker resolves these exact
+`ld`/`ar` binutils. The official PLC build also needs a Fortran compiler and
+CFITSIO development headers, plus BLAS/LAPACK, CFITSIO and Fortran runtimes.
+Its linker resolves these exact
 runtime SONAMEs through `cc -print-file-name`: `liblapack.so.3`, `libblas.so.3`,
 `libcfitsio.so.10` and `libgfortran.so.5`; `ldd` must resolve every resulting
 shared dependency.
