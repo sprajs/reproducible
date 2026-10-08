@@ -4,8 +4,9 @@ import io
 from pathlib import Path
 import tarfile
 import tempfile
+import subprocess
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 MODULE = Path(__file__).resolve().parents[1] / 'scripts/bootstrap_cosmology.py'
 spec = importlib.util.spec_from_file_location('bootstrap_cosmology', MODULE)
@@ -51,6 +52,22 @@ class BootstrapAdmission(unittest.TestCase):
             bootstrap.extract(archive, output, ['data/keep'])
             self.assertEqual((output / 'data/keep/a').read_bytes(), b'observed')
             self.assertFalse((output / 'data/other').exists())
+
+    def test_timeout_kills_group_reaps_and_retains_command_log(self):
+        for vanished in (False, True):
+            with self.subTest(vanished=vanished), tempfile.TemporaryDirectory() as tmp:
+                builder = bootstrap.Builder(Path(tmp))
+                process = Mock(pid=12345, returncode=-9)
+                process.wait.side_effect = [subprocess.TimeoutExpired(['fake'], 1), -9]
+                with patch.object(bootstrap.subprocess, 'Popen', return_value=process) as spawn, patch.object(bootstrap.os, 'killpg', side_effect=ProcessLookupError if vanished else None) as kill:
+                    with self.assertRaises(subprocess.TimeoutExpired):
+                        builder.run(['fake'], timeout=1)
+                self.assertTrue(spawn.call_args.kwargs['start_new_session'])
+                kill.assert_called_once_with(12345, bootstrap.signal.SIGKILL)
+                self.assertEqual(process.wait.call_count, 2)
+                self.assertEqual(builder.commands[0]['returncode'], -9)
+                self.assertTrue(builder.commands[0]['interrupted'])
+                self.assertEqual(builder.commands[0]['log_identity'], bootstrap.pin(Path(tmp) / 'command-000.log'))
 
     def test_existing_or_external_runtime_root_refused_untouched(self):
         with tempfile.TemporaryDirectory() as tmp:
