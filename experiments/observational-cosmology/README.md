@@ -76,6 +76,28 @@ build and executable inventories; acquisition refuses changed bytes. The
 controller requires clean committed Reproducible source and preserves raw CLASS
 products, input requests, native Gaussian outputs, failed prefixes and a terminal
 manifest. It checks source/runtime/data identities before and after the run.
+The optional `--input-root /absolute/restored-root` selects a separate working
+root containing both exact files at their declared `data/bao/` paths. It checks
+the same release byte lengths, SHA256 hashes, ordered full13 means and covariance
+before and after the attempt. It acquires no inputs; missing, changed or linked
+inputs are refused. The default remains this checkout. Record the selected exact
+S3 manifest URI/SHA256/VersionId and authoritative restore route in preservation
+provenance; a local working root is not that immutable source identity.
+
+```sh
+python -B experiments/observational-cosmology/controller.py \\
+  --runtime "$PWD/.work/cosmology-runtime/runtime.json" \\
+  --input-root "$PWD/data/restored-desi-root" \\
+  --attempt "$PWD/results/observational-cosmology/restored-quick-001" \\
+  --profile quick \\
+  --deadline-utc "$(date -u -d '+60 minutes' +%Y-%m-%dT%H:%M:%S+00:00)"
+```
+
+Use a new attempt name for every invocation. A restored dataset must match the
+declared directory layout; follow its catalog restore route rather than treating
+an acquisition recipe or preservation bundle as a named directory manifest.
+The command above omits the separately optional Planck score.
+
 The manifest hashes the complete retained inventory except itself, and records
 the finite fit resolution, observations, calibration and gate distinctions.
 Plotting checks saved product hashes and writes its own figure/environment
