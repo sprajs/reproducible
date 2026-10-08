@@ -16,6 +16,12 @@ permissions, with no object deletion or account administration. The separate
 cloud identity writes only `reproducible/` and reads `reproducible/`, `prospector/`
 and `shared/`. No root credentials belong in a research task or cloud setting.
 
+For selected scientific evidence, use the existing [exact-version archive
+workflow](archive.md) with [archive-storage.json](../archive-storage.json).
+It records individual S3 versions and enforces explicit evidence selection.
+The directory snapshot commands below preserve working input/attempt directories
+and the initial recovery snapshots; they do not replace those evidence rules.
+
 ## Local commands
 
 Install [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)

@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "bucket": "research-data-436908790672-eu-west-2",
+  "prefix": "reproducible/evidence",
+  "region": "eu-west-2",
+  "retention": "retain-indefinitely"
+}

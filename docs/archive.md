@@ -32,6 +32,12 @@ the repository's scientific environment and offline checks do not require it.
 
 ## Configuration and retention
 
+The shared London bucket is configured in
+[archive-storage.json](../archive-storage.json) with prefix
+`reproducible/evidence`. Use that file for the commands below and the restricted
+`research` local profile, or the approved cloud runtime identity. See
+[cloud access and recovery](cloud-storage.md) for credentials and setup.
+
 Provide a real bucket controlled by the collaboration; the helper never invents
 or creates a bucket. Configuration has only these fields (`region` is optional):
 
@@ -136,8 +142,10 @@ retention refusal and credential-safe diagnostics:
 python -m unittest discover -s tests -p test_archive_experiment.py -v
 ```
 
-No live bucket, identity or upload was available when this helper was introduced.
-Actual shared access remains blocked until the collaboration supplies a bucket
-and runtime identity, passes readiness, then performs and checks a small
-authorized valuable-evidence upload/restore. Missing runtime credentials fail
-explicitly; SDK errors are reported without echoing potentially sensitive details.
+The shared bucket's retention readiness passed for the local and cloud IAM
+identities during storage setup. A unique bucket-migration verification record
+was uploaded with the local identity and restored by exact version with the
+cloud identity; both commands ran on the local host. This verifies transport
+and permissions, not a cloud VM's readiness or a scientific result. Missing
+runtime credentials fail explicitly; SDK errors are reported without echoing
+potentially sensitive details.

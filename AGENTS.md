@@ -60,7 +60,9 @@ inputs; only remove inventoried disposable outputs within authorized scope.
 ## Shared cloud storage
 
 Use [the shared S3 guide](docs/cloud-storage.md) and `scripts/cloud_storage.py`
-for research snapshots. Check `status` first. Use the restricted `research`
+for working snapshots. For selected scientific evidence use the
+[exact-version archive](docs/archive.md) with `archive-storage.json`.
+Check access/readiness first. Use the restricted `research`
 profile; never root. Save completed and failed attempts with `push`, retaining
 the returned snapshot and manifest SHA-256. Restore only with the pinned hash.
 Keep credentials out of source, prompts and receipts. Local controller paths
