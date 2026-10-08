@@ -45,24 +45,29 @@ def plot(attempt):
             raw = path.read_bytes()
             figures.append({"path": str(path), "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()})
         plt.close(fig)
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
     covariance = record["selection"]["covariance"]
     for model, row in record["models"].items():
         points = row["fit"]["points"]
         minimum = row["fit"]["best_evaluated"]["chi2"]
-        axes[0].plot([p["H0"] for p in points], [p["chi2"] - minimum for p in points],
-                     ".-", label=f"{names[model]}, H₀={row['fit']['best_evaluated']['H0']:.3f}",
-                     color=colors[model])
+        for axis in axes[:2]:
+            axis.plot([p["H0"] for p in points], [p["chi2"] - minimum for p in points],
+                      ".-", label=f"{names[model]}, H₀={row['fit']['best_evaluated']['H0']:.3f}",
+                      color=colors[model])
         rows = predictions[model]["rows"]
-        axes[1].plot(range(13), [r["residual"] / covariance[i][i] ** .5 for i, r in enumerate(rows)],
+        axes[2].plot(range(13), [r["residual"] / covariance[i][i] ** .5 for i, r in enumerate(rows)],
                      "o-", label=names[model], color=colors[model])
     axes[0].set(xlabel="H₀ [km s⁻¹ Mpc⁻¹]", ylabel="Conditional Δχ² within each model",
                 title="DESI full13, all other coordinates fixed")
     axes[0].legend(fontsize=8)
-    axes[1].axhline(0, color="gray", linewidth=.8)
-    axes[1].set(xlabel="Released row index (final DH, DM order retained)",
+    best_h0 = [row["fit"]["best_evaluated"]["H0"] for row in record["models"].values()]
+    axes[1].set(xlabel="H₀ [km s⁻¹ Mpc⁻¹]", ylabel="Conditional Δχ² within each model",
+                xlim=(min(best_h0) - 1.5, max(best_h0) + 1.5), ylim=(0, 25),
+                title="Minimum detail (saved evaluated points)")
+    axes[2].axhline(0, color="gray", linewidth=.8)
+    axes[2].set(xlabel="Released row index (final DH, DM order retained)",
                 ylabel="(observed − predicted) / √Cᵢᵢ", title="Display scaling only; score uses full C")
-    axes[1].legend(fontsize=8)
+    axes[2].legend(fontsize=8)
     save(fig, "desi-fit")
     fig, axes = plt.subplots(2, 2, figsize=(11, 7))
     for model, product in products.items():

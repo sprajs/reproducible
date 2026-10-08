@@ -64,6 +64,14 @@ class ObservationalCosmologyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             controller.render_input("lcdm", 68, "/tmp/bad\noutput")
 
+    def test_unconsumed_fluid_controls_refuse(self):
+        physical = controller.parameters("constant-w", 68)
+        self.assertEqual(controller.parameter_consumption(b"modes = s\n", physical, full=False)["status"], "passed")
+        for raw, full in ((b"w0_fld = -0.9\n", False), (b"modes = s\n", True),
+                          (b"modes = t\n", False)):
+            with self.assertRaises(ValueError):
+                controller.parameter_consumption(raw, physical, full=full)
+
     def test_changed_existing_input_is_preserved(self):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / acquire.bao.INPUTS[0]["relative_path"]

@@ -249,6 +249,21 @@ def gaussian_score(runtime, data, prediction, directory):
     return record
 
 
+def parameter_consumption(raw, physical, *, full):
+    unused = {}
+    for line in raw.decode("ascii").splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        key, value = [part.strip() for part in line.split("=", 1)]
+        require(key in physical and key not in unused and value == physical[key],
+                "unconsumed parameter/value differs from supplied request")
+        unused[key] = value
+    allowed = set() if full else {"modes", "ic", "l_max_scalars", "P_k_max_1/Mpc", "z_pk"}
+    require(set(unused) <= allowed, "unconsumed physical/fluid control refused")
+    return {"status": "passed", "unused": unused, "allowed_unused": sorted(allowed),
+            "physical_and_fluid_controls": "all consumed"}
+
+
 def class_case(engine, model, h0, directory, attempt, deadline, *, full=False):
     directory.mkdir(mode=0o700)
     physical = parameters(model, h0, full=full)
@@ -257,6 +272,9 @@ def class_case(engine, model, h0, directory, attempt, deadline, *, full=False):
                                   directory, attempt, LIMITS, deadline, LIMITS["combined_logs_bytes"])
     json_new(directory / "process.json", process)
     require(process["status"] == "completed", "CLASS failed; raw process/streams retained")
+    unused_raw, unused_pin = transport.file_bytes(directory / "class_unused_parameters", 65536)
+    consumption = parameter_consumption(unused_raw, physical, full=full)
+    json_new(directory / "parameter-consumption.json", {**consumption, "source_identity": unused_pin})
     if full:
         products, state = transport.products(directory, physical, LIMITS, engine["binary"])
         for point in products["background"]:
@@ -311,6 +329,12 @@ def execute(runtime_path, attempt_path, profile, deadline_utc, *, planck=False):
                         "conditional_fit": "unassessed", "posterior": "not_requested",
                         "joint_inference": "not_requested"},
               "synthetic_controls": "unit tests only; excluded from observational score"}
+    for name in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "BLIS_NUM_THREADS",
+                 "VECLIB_MAXIMUM_THREADS", "NUMEXPR_NUM_THREADS"):
+        os.environ[name] = "1"
+    record["parent_thread_environment"] = {name: os.environ[name] for name in
+        ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "BLIS_NUM_THREADS",
+         "VECLIB_MAXIMUM_THREADS", "NUMEXPR_NUM_THREADS")}
     owner = official = None
     runtime = None
     deadline = time.monotonic() + 180

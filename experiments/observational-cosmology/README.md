@@ -87,6 +87,46 @@ is committed in this packet.
 
 ## Findings
 
-2026-10-08: controller and fresh-runtime recipe under integration. An observational
-result is pending the committed real-data run and independent fresh-checkout
-review. Existing fixed-point reference scores are not being relabelled as fits.
+2026-10-08: clean source `fa7627fd94e182354e3200a247d8a307bf911711` completed
+quick and broader profiles with the newly acquired source/runtime and full13
+data. A separate fresh Git checkout rebuilt CLASS/PLC/SDK and independently
+repeated quick; all fitted coordinates, χ² values, full scientific predictions
+and separate official likelihood components matched exactly. Observed filesystem
+paths, process timings and manifest hashes differ between independent attempts.
+
+| Model | Quick H₀ | Quick χ² | Broader H₀ | Broader χ² | Separate broader Planck raw log likelihood |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Flat ΛCDM | 68.833139 | 10.641052 | 68.831349 | 10.641026 | −626.154767 |
+| Flat w = −0.9 | 66.698450 | 16.957094 | 66.697421 | 16.957078 | −866.973292 |
+
+H₀ units are km s⁻¹ Mpc⁻¹. Quick used 23 evaluated points per model and a
+0.03768749 final bracket; broader used 46 and 0.00621124. The H₀ changes are
+−0.001790 and −0.001030, with χ² decreases of 0.00002584 and 0.00001603.
+These are empirical optimizer-resolution comparisons, not confidence intervals
+or certified CLASS accuracy. Both models' full-output final states gave exactly
+the same DESI χ² as their faster fit states. Every inferred dark-energy density
+was positive. All three official test vectors passed the unchanged 1e−6 gate;
+the fixed A_planck relative prior penalty is zero and remains separately declared.
+Full requests had no unused controls; fast requests left only the five deliberately
+unused output selectors. Later guards explicitly admit this consumption policy
+and force parent-process OMP/BLAS threads to one before loading the C API.
+
+Primary quick completed in 98.82 s, retaining 1,059,968,127 B in 719 files.
+Broader completed in 128.01 s, retaining 2,053,894,930 B in 1363 files, within
+the unchanged 2 GiB attempt ceiling. Their manifest hashes are
+`f8853aa49ac9680b823ae5e9ae0bda266caf20b0486e293d2e48982f7db66042` and
+`4a33be8b84a9d44d8c080eae5863436b26b3029fe0d5b429a3c883613da3d02d`;
+the independent fresh quick manifest is
+`4b4a93fc0ac6915213a3881a2b95bb373a976f9f35f57fc34094da32c5608f68`.
+Plots retain signed TE, separate linear/Halofit spectra, and covariance-aware
+fit scores; residual marginal-error scaling is explicitly for display only.
+No joint CMB/BAO score, posterior, calibrated SN fit or native CMB qualification
+is inferred. The separate raw Planck values are conditional evaluations at each
+DESI minimum, rather than CMB-fit optima or a combined model-evidence statistic.
+
+The first primary and fresh attempts at `a924cf98` retained the same explicit
+CLASS input failure: even `non linear = none` is rejected when perturbations are
+not requested. A new source/attempt omitted that selector to use the pinned
+source default; the original refusals and successful official test vectors are
+preserved locally. Final guard execution and durable archive status are recorded
+separately after their actual checks; no upload is implied by these local records.
