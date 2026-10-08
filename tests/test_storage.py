@@ -28,10 +28,10 @@ class StorageTests(unittest.TestCase):
                     contextlib.redirect_stdout(io.StringIO()):
                 check_repository.check()
 
-    def test_two_mib_boundary_and_excess(self):
-        self.check_tree({"source.txt": 2 * 1024 * 1024})
-        with self.assertRaisesRegex(ValueError, "exceeds 2 MiB"):
-            self.check_tree({"source.txt": 2 * 1024 * 1024 + 1})
+    def test_public_source_budget_boundary_and_excess(self):
+        self.check_tree({"source.txt": check_repository.PUBLIC_SOURCE_BYTES})
+        with self.assertRaisesRegex(ValueError, "exceeds 2.25 MiB"):
+            self.check_tree({"source.txt": check_repository.PUBLIC_SOURCE_BYTES + 1})
 
     def test_local_and_generated_files_remain_excluded(self):
         for name in ("results/receipt.json", "data/input.txt", ".work/source.py", "figure.png"):
