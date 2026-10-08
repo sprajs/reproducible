@@ -96,6 +96,9 @@ snapshot and manifest identities.
 
 ## Current Codex Cloud (Cosmology)
 
+Use [the startup discovery instructions](cloud-startup.md) for every new research
+chat; they define the catalog check and reusable environment setup.
+
 The private `Cosmology` environment includes all three repositories. Request
 `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as **Personal** environment
 variables and supply the separate `reproducible-cloud` identity through the

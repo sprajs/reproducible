@@ -59,6 +59,10 @@ inputs; only remove inventoried disposable outputs within authorized scope.
 
 ## Shared cloud storage
 
+At the start of data-dependent work, follow [storage discovery](docs/cloud-startup.md).
+Run `scripts/storage_startup.py` (with `--ambient-credentials` in cloud) and retain
+its catalog pin. Do not infer missing shared data from an empty local directory.
+
 Use [the common named layout](docs/shared-data.md), `storage-layout.json` and
 `scripts/research_storage.py` for new named collections. Pin exact manifest
 URI/SHA256/VersionId and format; the discovery pointer is not a scientific pin.
