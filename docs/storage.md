@@ -1,6 +1,7 @@
 # Data, results and history
 
-[Shared S3 storage](cloud-storage.md) supplies verified private snapshots across
+[Named shared data](shared-data.md) supplies persistent collections and an exact-version
+catalog; [shared S3 storage](cloud-storage.md) retains historical snapshots across
 machines. Local ignored directories are working stores; upload complete attempts
 and retain their manifest identity before treating a result as preserved.
 

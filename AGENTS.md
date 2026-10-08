@@ -59,6 +59,11 @@ inputs; only remove inventoried disposable outputs within authorized scope.
 
 ## Shared cloud storage
 
+Use [the common named layout](docs/shared-data.md), `storage-layout.json` and
+`scripts/research_storage.py` for new named collections. Pin exact manifest
+URI/SHA256/VersionId and format; the discovery pointer is not a scientific pin.
+Keep the transport copies/config/tests in all three repositories aligned.
+
 Use [the shared S3 guide](docs/cloud-storage.md) and `scripts/cloud_storage.py`
 for working snapshots. For selected scientific evidence use the
 [exact-version archive](docs/archive.md) with `archive-storage.json`.

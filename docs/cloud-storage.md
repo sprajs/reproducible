@@ -22,6 +22,13 @@ It records individual S3 versions and enforces explicit evidence selection.
 The directory snapshot commands below preserve working input/attempt directories
 and the initial recovery snapshots; they do not replace those evidence rules.
 
+## Named shared data
+
+Use [the common layout](shared-data.md) and `scripts/research_storage.py` for
+readable dataset/experiment/evidence collections and exact-version restores.
+The historical snapshot commands below remain the recovery route for their
+original receipts; the catalog provides readable aliases without deleting them.
+
 ## Local commands
 
 Install [AWS CLI v2](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
