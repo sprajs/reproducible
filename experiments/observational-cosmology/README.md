@@ -128,5 +128,12 @@ The first primary and fresh attempts at `a924cf98` retained the same explicit
 CLASS input failure: even `non linear = none` is rejected when perturbations are
 not requested. A new source/attempt omitted that selector to use the pinned
 source default; the original refusals and successful official test vectors are
-preserved locally. Final guard execution and durable archive status are recorded
-separately after their actual checks; no upload is implied by these local records.
+preserved locally. Source `a92bccea00b95e3afb1f91582304567141b6cf59` then completed
+quick with explicit consumption admission and recorded parent thread settings
+all equal to one: 57.03 s, 767 files, manifest
+`ec51ebf2682c7288376e6cabd0d6e64986656a0f7180905d14b8eb12ee718385`.
+Its fitted values and separate Planck components matched the preceding quick
+runs exactly. The final source additionally restores the original selected-CLDF
+directory-tree gate; that structural gate and retained-product likelihood replay
+have separate receipts rather than rewriting any of these attempts. Durable
+archive status remains separate; no upload is implied by local records.

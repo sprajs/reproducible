@@ -5,6 +5,7 @@ import io
 import json
 from pathlib import Path
 import tempfile
+import time
 import unittest
 from unittest import mock
 
@@ -71,6 +72,22 @@ class ObservationalCosmologyTests(unittest.TestCase):
                           (b"modes = t\n", False)):
             with self.assertRaises(ValueError):
                 controller.parameter_consumption(raw, physical, full=full)
+
+    def test_official_product_tree_refuses_undeclared_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            declared = []
+            for _, relative in controller.score_admission.PRODUCTS:
+                product = root / relative
+                product.mkdir(parents=True)
+                member = product / "declared"
+                member.write_bytes(b"original")
+                declared.append(controller.pin(member))
+            config = {"plc_root": str(root), "admission_files": declared}
+            self.assertEqual(len(controller.planck_product_tree(config, time.monotonic() + 10)["files"]), 3)
+            (product / "unexpected").write_bytes(b"extra")
+            with self.assertRaises(ValueError):
+                controller.planck_product_tree(config, time.monotonic() + 10)
 
     def test_changed_existing_input_is_preserved(self):
         with tempfile.TemporaryDirectory() as directory:

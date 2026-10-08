@@ -49,6 +49,7 @@ theory = local_module("theory", "experiments/lcdm-reference/theory.py")
 transport = local_module("transport", "experiments/lcdm-reference/run.py", theory_binding=theory)
 bao = local_module("bao", "experiments/lcdm-bao-reference/bao.py", theory_binding=theory)
 native_transport = local_module("native_transport", "experiments/lcdm-bao-reference/transport.py", bao_binding=bao)
+score_admission = local_module("score_admission", "experiments/lcdm-reference/score.py")
 
 PROFILES = {
     "quick": {"grid_count": 9, "h0_tolerance": 0.05, "max_refinements": 20},
@@ -221,7 +222,18 @@ def verify_runtime(runtime, deadline):
         for item in [planck["library"], planck["build_receipt"], *planck["admission_files"]]:
             _, actual = transport.file_bytes(item["path"], 2147483648, item)
             planck_files.append(actual)
-    return {"class": class_files, "gaussian": native_files, "planck": planck_files}
+        tree = planck_product_tree(planck, deadline)
+    else:
+        tree = None
+    return {"class": class_files, "gaussian": native_files, "planck": planck_files,
+            "planck_product_tree": tree}
+
+
+def planck_product_tree(planck, deadline):
+    roots = [Path(planck["plc_root"]) / relative for _, relative in score_admission.PRODUCTS]
+    selected = [item for item in planck["admission_files"]
+                if any(root in Path(item["path"]).parents for root in roots)]
+    return score_admission.product_tree(planck["plc_root"], selected, deadline)
 
 
 def gaussian_score(runtime, data, prediction, directory):
