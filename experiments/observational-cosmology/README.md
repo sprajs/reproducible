@@ -85,11 +85,11 @@ S3 manifest URI/SHA256/VersionId and authoritative restore route in preservation
 provenance; a local working root is not that immutable source identity.
 
 ```sh
-python -B experiments/observational-cosmology/controller.py \\
-  --runtime "$PWD/.work/cosmology-runtime/runtime.json" \\
-  --input-root "$PWD/data/restored-desi-root" \\
-  --attempt "$PWD/results/observational-cosmology/restored-quick-001" \\
-  --profile quick \\
+python -B experiments/observational-cosmology/controller.py \
+  --runtime "$PWD/.work/cosmology-runtime/runtime.json" \
+  --input-root "$PWD/data/restored-desi-root" \
+  --attempt "$PWD/results/observational-cosmology/restored-quick-001" \
+  --profile quick \
   --deadline-utc "$(date -u -d '+60 minutes' +%Y-%m-%dT%H:%M:%S+00:00)"
 ```
 
