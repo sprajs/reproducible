@@ -57,6 +57,15 @@ ignored output, third-party archives or downloaded papers. License/publication
 permission must be checked before redistributing inputs. Preserve original
 inputs; only remove inventoried disposable outputs within authorized scope.
 
+## Shared cloud storage
+
+Use [the shared S3 guide](docs/cloud-storage.md) and `scripts/cloud_storage.py`
+for research snapshots. Check `status` first. Use the restricted `research`
+profile; never root. Save completed and failed attempts with `push`, retaining
+the returned snapshot and manifest SHA-256. Restore only with the pinned hash.
+Keep credentials out of source, prompts and receipts. Local controller paths
+remain working copies; cloud preservation is complete only after byte checks.
+
 ## Contributions and PRs
 
 Follow [CONTRIBUTING.md](CONTRIBUTING.md). Work on a `codex/` branch, stage explicit

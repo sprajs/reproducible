@@ -28,6 +28,9 @@ and rendered figures live in ignored `results/` or `simulations/`. The public
 packet identifies the evidence; a published scientific result should cite a
 separate durable archive containing its exact inputs and full run records.
 
+Use [shared cloud storage](docs/cloud-storage.md) to save verified input and run
+snapshots to the private London S3 bucket and restore them on another machine.
+
 ## Run the example
 
 Python 3.11 or newer and [uv](https://docs.astral.sh/uv/) are needed for this

@@ -1,0 +1,7 @@
+{
+  "bucket": "research-data-436908790672-eu-west-2",
+  "region": "eu-west-2",
+  "account_id": "436908790672",
+  "local_profile": "research",
+  "namespaces": ["reproducible", "prospector", "irreducible", "shared"]
+}

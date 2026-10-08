@@ -1,5 +1,9 @@
 # Data, results and history
 
+[Shared S3 storage](cloud-storage.md) supplies verified private snapshots across
+machines. Local ignored directories are working stores; upload complete attempts
+and retain their manifest identity before treating a result as preserved.
+
 Git stores experiment descriptions, configuration, orchestration/visualization
 source and small provenance manifests. `data/`, `downloads/`, `results/`, `runs/`,
 `simulation/`, `simulations/`, `notebooks/` and `.work/` are ignored. The repository
