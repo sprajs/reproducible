@@ -149,3 +149,6 @@ The optional [versioned archive workflow](archive.md) stores explicitly selected
 valuable evidence outside Git. It uses runtime credentials, requires versioned
 objects and verifies exact hashes on restoration; it does not make ignored local
 storage durable or establish redistribution rights.
+
+The [2026-10-08 three-project preservation account](preservation-2026-10-08.md)
+records the private archive/catalog pins, classification and verified restore route.

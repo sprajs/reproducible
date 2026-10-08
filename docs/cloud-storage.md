@@ -13,8 +13,8 @@ do not hide underlying usage. This is an alert, not a spending limit.
 credentials. Namespaces separate `reproducible/`, `prospector/`, `irreducible/`
 and `shared/`. The local `research` AWS profile has bucket-only read/write
 permissions, with no object deletion or account administration. The separate
-cloud identity writes only `reproducible/` and reads `reproducible/`, `prospector/`
-and `shared/`. No root credentials belong in a research task or cloud setting.
+cloud identity writes only `reproducible/` and reads `reproducible/`, `prospector/`,
+`irreducible/` and `shared/`. No root credentials belong in a research task or cloud setting.
 
 For selected scientific evidence, use the existing [exact-version archive
 workflow](archive.md) with [archive-storage.json](../archive-storage.json).

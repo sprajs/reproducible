@@ -22,7 +22,7 @@ before data-dependent work, without rebuilding engines or running experiments:
 1. Read the cloud-environment runtime skill. Preserve the inherited proxy and
    CA trust. Use the environment's existing personal AWS signing credentials;
    never print them, copy them to files, or use root. This identity can read
-   `shared/`, `prospector/` and `reproducible/`, and write `reproducible/`.
+   `shared/`, `prospector/`, `irreducible/` and `reproducible/`, and write only `reproducible/`.
    Engine evidence and shared catalog publication require the separate authorized
    local identity. A fresh computer needs its own authorized credentials.
 2. Find the existing Reproducible checkout, normally `/workspace/reproducible`.
