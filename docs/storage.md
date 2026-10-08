@@ -7,7 +7,7 @@ and retain their manifest identity before treating a result as preserved.
 Git stores experiment descriptions, configuration, orchestration/visualization
 source and small provenance manifests. `data/`, `downloads/`, `results/`, `runs/`,
 `simulation/`, `simulations/`, `notebooks/` and `.work/` are ignored. The repository
-checker rejects tracked generated products and caps the public tree at 2 MiB
+checker rejects tracked generated products and caps the public tree at 2.25 MiB
 and each packet at eight source files. Change a budget only with an explicit
 review of the storage design. `.gitignore` alone cannot untrack
 previously committed files. Never use `git add -f` for those stores.
@@ -133,3 +133,18 @@ eight source files. This representation changes no cap or scientific policy.
 The LCDM baseline's old1MiB source snapshot bound still prevents an attempt from
 this complete current tree; use its original reviewed source for historical reruns.
 Storage savings alone do not admit NEXT17, a new Box route or all19 execution.
+
+2026-10-08 source-storage review: the concrete exact-version archive helper,
+pinned CLASS/PLC/SDK bootstrap, full13 conditional-fit controller, immutable
+alternative candidate and their admission/recovery tests add about 114 KiB.
+The integrated source exceeded the previous 2 MiB allowance by about 5 KiB before
+concise executed findings. The reviewed 2.25 MiB allowance covers this specific
+consumer and evidence machinery. The eight-file packet cap, generated-product
+and third-party-input exclusions, and every historical scientific request/source
+snapshot budget remain unchanged. No bulk result or runtime receipt is admitted
+to Git by this amendment.
+
+The optional [versioned archive workflow](archive.md) stores explicitly selected
+valuable evidence outside Git. It uses runtime credentials, requires versioned
+objects and verifies exact hashes on restoration; it does not make ignored local
+storage durable or establish redistribution rights.
