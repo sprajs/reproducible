@@ -114,7 +114,37 @@
       "transfer_neglect_delta_k_S_t1": 0.05,
       "transfer_neglect_delta_k_S_t2": 0.17
     },
+    "cl-permille-lensing": {
+      "accurate_lensing": 1,
+      "delta_l_max": 1000,
+      "hyper_flat_approximation_nu": 7000.0,
+      "num_mu_minus_lmax": 140,
+      "transfer_neglect_delta_k_S_e": 0.13,
+      "transfer_neglect_delta_k_S_t0": 0.17,
+      "transfer_neglect_delta_k_S_t1": 0.05,
+      "transfer_neglect_delta_k_S_t2": 0.17
+    },
     "default": {},
+    "ref1-sampling-only": {
+      "accurate_lensing": 0,
+      "delta_l_max": 1000,
+      "hyper_flat_approximation_nu": 7000.0,
+      "k_step_sub": 0.025,
+      "k_step_super": 0.001,
+      "l_linstep": 20,
+      "l_logstep": 1.06,
+      "num_mu_minus_lmax": 70,
+      "q_linstep": 0.225,
+      "tol_ncdm": 0.0005,
+      "tol_ncdm_bg": 5e-06,
+      "tol_ncdm_synchronous": 0.0005,
+      "tol_perturbations_integration": 5e-06,
+      "tol_thermo_integration": 5e-07,
+      "transfer_neglect_delta_k_S_e": 0.13,
+      "transfer_neglect_delta_k_S_t0": 0.17,
+      "transfer_neglect_delta_k_S_t1": 0.05,
+      "transfer_neglect_delta_k_S_t2": 0.17
+    },
     "reference1": {
       "accurate_lensing": 1,
       "delta_l_max": 1000,
@@ -162,7 +192,7 @@
     "reference_policy_rationale": "Orthogonal perturbation integration, k/q/ell sampling, lensing integration, thermodynamics and ncdm refinement; further halving. Finite loglike gates unchanged.",
     "requirement": "64 cosmological corners x both calibration ends, 16 seeded interiors, anchor; 8 spread/worst refinements, further refinement <=.05; production-reference <=.1; future pilot/posterior 32 strata",
     "source": "explicit conservative conditional project target; v1 retained unchanged",
-    "status": "pending"
+    "status": "cl-permille anchor failed .1 gate; numerical repair diagnostics pending"
   },
   "physical_conditioning_normalization": 1.0,
   "physical_indicator": "CLASS_Omega_Lambda_nonnegative",
