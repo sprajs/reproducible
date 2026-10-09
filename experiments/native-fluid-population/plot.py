@@ -27,7 +27,7 @@ def render(attempt, output):
                 xs.append(x); ys.append(float('nan'))
             else:
                 xs.append(x); ys.append(value['value'])
-        ax.plot(xs, ys, marker='.', label=json.dumps(case['parameters'], separators=(',', ':')) if case['family'] == 'chaplygin' else 'M=%g kg, b=%g m' % (case['parameters']['M_kg'], case['parameters']['b_m']))
+        ax.plot(xs, ys, marker='.', label='As=%g, alpha=%g' % (case['parameters']['a_s'], case['parameters']['alpha']) if case['family'] == 'chaplygin' else 'M=%g kg, b=%g m' % (case['parameters']['M_kg'], case['parameters']['b_m']))
     for case in report['cases']:
         if case['resolution'] != 'default':
             continue
@@ -48,12 +48,7 @@ def render(attempt, output):
             ax.set_yscale('log')
         if i in (3, 5):
             ax.set_yscale('log')
-        if i < 3:
-            handles, labels = ax.get_legend_handles_labels()
-            labels = ['As=%g, alpha=%g' % (json.loads(label)['a_s'], json.loads(label)['alpha']) for label in labels]
-            ax.legend(handles, labels, fontsize=6)
-        else:
-            ax.legend(fontsize=6)
+        ax.legend(fontsize=6)
     axes[1, 1].axvline(1, color='grey', linestyle=':', label='retained support boundary')
     fig.suptitle('Native synthetic fluid/population responses — ' + report['profile'] + '\nEmpirical numerical status: ' + manifest['numerical']['status'] + '; support boundary retained/unassessed', fontsize=12)
     fig.savefig(output / 'native-fluid-population.png', dpi=150)
