@@ -2,6 +2,9 @@
 """Acquire exact declared family inputs; preserve partial attempts and refuse changed bytes.
 
 Consumes a locally exact-version-verified research-resource/v1 family ledger.
+The deadline is checked between reads; each network read may take up to45 seconds.
+At an exactly exhausted transfer budget, exact frozen file length/hash may pass
+without an additional upstream EOF probe; the receipt records that distinction.
 Acquisition is separate from S3 publication, scientific admission and redistribution.
 """
 import argparse
@@ -44,6 +47,7 @@ def acquire(asset, output, max_bytes, transfer_budget, max_attempts=4, deadline_
         partial = output.with_name(output.name + f'.attempt-{index}.partial')
         try:
             count = 0
+            eof_checked = False
             request = urllib.request.Request(url, headers={'User-Agent': 'Reproducible-exact-input-acquisition/1'})
             with urllib.request.urlopen(request, timeout=45) as source, partial.open('xb') as stream:
                 while True:
@@ -51,12 +55,17 @@ def acquire(asset, output, max_bytes, transfer_budget, max_attempts=4, deadline_
                         raise ValueError('transfer/deadline budget exhausted')
                     block = source.read(min(1024 * 1024, size - count + 1, transfer_budget - received))
                     if not block:
+                        eof_checked = True
                         break
                     received += len(block)
                     count += len(block)
                     stream.write(block)
                     if count > size:
                         raise ValueError('response exceeds declared byte count')
+                    if count == size and received == transfer_budget:
+                        # Exact input identity can be verified without spending
+                        # an extra transfer byte beyond the declared cap.
+                        break
             if count != size or digest(partial) != sha:
                 raise ValueError('response differs from declared length/SHA256')
             # Link creates the admitted file without replacing another process's file.
@@ -64,7 +73,7 @@ def acquire(asset, output, max_bytes, transfer_budget, max_attempts=4, deadline_
             partial.unlink()
             attempts.append({'url': url, 'status': 'verified'})
             return {'status': 'acquired_exact_upstream', 'bytes': size, 'sha256': sha,
-                    'path': str(output), 'attempts': attempts, 'received_bytes': received, 's3_payload_custody': False}
+                    'path': str(output), 'attempts': attempts, 'received_bytes': received, 'upstream_eof_checked': eof_checked, 's3_payload_custody': False}
         except (Exception, KeyboardInterrupt) as exc:
             attempts.append({'url': url, 'status': 'failed', 'error': type(exc).__name__ + ': ' + str(exc)[:256],
                              'partial_path': str(partial) if partial.exists() else None,
@@ -91,7 +100,8 @@ def main():
     args.destination.mkdir(parents=True)
     report = {'schema': 'dataset-acquisition-attempt/v1', 'catalog_pin': ledger['catalog_pin'],
               'family_ledger_sha256': digest(args.family_ledger), 'max_asset_bytes': args.max_asset_bytes,
-              'max_total_bytes': args.max_total_bytes, 'assets': [], 'scientific_admission': 'not_performed',
+              'max_total_bytes': args.max_total_bytes, 'assets': [],
+              'deadline_policy': 'soft180s inter-read deadline, network reads timeout45s', 'scientific_admission': 'not_performed',
               'rights': 'private preservation source review required; no redistribution claim'}
     consumed = 0
     acquired = 0
