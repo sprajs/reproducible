@@ -27,6 +27,7 @@ The dedicated command, after a clean pinned CLASS build and an admitted runtime
 configuration, is:
 
 ```sh
+mkdir -p results/lcdm-reference
 python -B experiments/lcdm-reference/run.py \
   --config .work/lcdm-reference-20261003/config.json \
   --attempt results/lcdm-reference/<fresh-attempt> \
