@@ -1,6 +1,6 @@
 """Four independent transformed MH chains; emcee/SciPy own sampling kernels."""
 import hashlib
-import importlib.util
+import types
 import json
 import math
 import os
@@ -8,15 +8,22 @@ from pathlib import Path
 import sys
 
 
-def load_coordinates():
-    source = Path(__file__).with_name('coordinates.py')
-    spec = importlib.util.spec_from_file_location('relative_sn_coordinates', source)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+def execute_bound_source(expected, name, limit):
+    source = Path(expected['path']).resolve()
+    if source.is_symlink() or source.stat().st_size > limit:
+        raise ValueError('bounded regular pinned source required')
+    raw = source.read_bytes()
+    if len(raw) != expected['bytes'] or hashlib.sha256(raw).hexdigest() != expected['sha256']:
+        raise ValueError('executing source bytes differ from policy')
+    module = types.ModuleType(name)
+    module.__file__ = str(source)
+    exec(compile(raw, str(source), 'exec'), module.__dict__)
     return module
 
 
-coordinates = load_coordinates()
+# The controller binds these exact bytes before importing this orchestration.
+# No source loader may choose a cached bytecode body instead.
+coordinates = execute_bound_source(_ADMITTED_COORDINATES_PIN, 'relative_sn_coordinates', 16384)
 
 
 def pin(path):
@@ -38,10 +45,7 @@ def admitted_engine(policy):
     expected = policy['reviewed_primary_engine_source']
     if pin(expected['path']) != expected:
         raise ValueError('reviewed statistical engine source identity differs')
-    spec = importlib.util.spec_from_file_location('reviewed_primary_statistical_inventory', expected['path'])
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return execute_bound_source(expected, 'reviewed_primary_statistical_inventory', 1048576)
 
 
 def run_chain(evaluator, configuration, attempt, engine_inventory):
@@ -130,8 +134,11 @@ def run_chain(evaluator, configuration, attempt, engine_inventory):
             'single_walker_independent_chain': True, 'production_adaptation': False,
             'proposal_df': 6, 'proposal_shape_is_not_covariance': True,
             'proposal_covariance': (1.5*shape).tolist(), 'posterior_qualified': False}
-    except BaseException:
-        checkpoint('refused_or_interrupted')
+    except BaseException as original_error:
+        try:
+            checkpoint('refused_or_interrupted')
+        except BaseException as checkpoint_error:
+            original_error.add_note('Failed prefix checkpoint also refused: '+str(checkpoint_error))
         raise
     finally:
         states.close(); proposals.close()
