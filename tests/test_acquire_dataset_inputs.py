@@ -15,14 +15,25 @@ class AcquisitionFailureTests(unittest.TestCase):
         return {'expected_bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest(),
                 'acquisition_routes': [{'kind': 'pinned_download', 'urls': ['https://example.invalid/original']}]}
 
-    def test_valid_exact_transfer_cap_admits_without_extra_probe(self):
+    def test_valid_exact_transfer_cap_admits_after_eof_probe(self):
         with tempfile.TemporaryDirectory() as td, patch.object(acquisition.urllib.request, 'urlopen', return_value=io.BytesIO(b'good')):
             target = Path(td) / 'original'
             result = acquisition.acquire(self.asset(), target, 8, 4)
             self.assertEqual(result['status'], 'acquired_exact_upstream')
             self.assertEqual(target.read_bytes(), b'good')
             self.assertEqual(result['received_bytes'], 4)
-            self.assertFalse(result['upstream_eof_checked'])
+            self.assertTrue(result['upstream_eof_checked'])
+            self.assertEqual(result['overflow_probe_bytes'], 0)
+
+    def test_exact_cap_overlong_valid_prefix_is_refused_and_probe_charged(self):
+        with tempfile.TemporaryDirectory() as td, patch.object(acquisition.urllib.request, 'urlopen', return_value=io.BytesIO(b'good!')):
+            target = Path(td) / 'original'
+            result = acquisition.acquire(self.asset(), target, 8, 4)
+            self.assertEqual(result['status'], 'failed')
+            self.assertFalse(target.exists())
+            self.assertEqual(result['received_bytes'], 5)
+            self.assertEqual(result['overflow_probe_bytes'], 1)
+            self.assertEqual(result['attempts'][0]['partial_bytes'], 5)
 
     def test_changed_bytes_are_preserved_without_admission(self):
         with tempfile.TemporaryDirectory() as td, patch.object(acquisition.urllib.request, 'urlopen', return_value=io.BytesIO(b'evil')):
