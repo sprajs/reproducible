@@ -63,7 +63,10 @@ before data-dependent work, without rebuilding engines or running experiments:
    Catalog curation is separate from uploading an attempt. Use `list --collection`
    for completed uploads not yet in the catalog. Before ending or handing off
    useful work, publish full failed/partial evidence and unique unfinished state
-   too. Record exact pins in Git or an S3 handoff; local paths cannot be the only
+   too. For work owned by any repo, the cloud identity can write
+   `reproducible/handoffs/<owner-repository>/<name>` without extra permissions.
+   Preserve actual ownership/source/role in provenance; this does not promote
+   the handoff to a scientific result. Record exact pins in Git or an S3 handoff; local paths cannot be the only
    cross-run record. If publication is blocked, retain bytes and report the
    unpreserved state. Evict scratch only after fresh byte checks.
 
