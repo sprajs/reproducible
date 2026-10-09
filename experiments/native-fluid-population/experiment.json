@@ -21,8 +21,8 @@
   "inputs": [],
   "execution": null,
   "blockers": [
-    "Generic single-request runner has no registered route for dedicated compiled controller.",
-    "Final production SDK/source/build pins pending root integration and permanent scientific checks."
+    "Generic single-request runner has no registered route for this reviewed dedicated compiled controller.",
+    "No observational model/data/likelihood contract supplied."
   ],
-  "request_sha256": "817d8895d59ca0f6feca724326ec045c948de87d8b95c7239a44bc087ff96c8b"
+  "request_sha256": "5e4c7079edb25c535e2c2e2a3c139f378f13f4cc0728c6e4a8c0aa3508822a43"
 }
