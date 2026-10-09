@@ -306,6 +306,8 @@ def execute(args):
     contract = validate_contract(read_json(args.contract))
     configuration, configuration_pin = json_identity(args.points) if args.mode == "pilot" else (None, None)
     if configuration is not None:
+        if configuration_pin["sha256"] != args.pilot_config_sha256:
+            raise ValueError("reviewed parent/child pilot configuration identity differs")
         contract = pilot_admission(contract, configuration)
     limits = contract["limits"]
     deadline = started + limits["attempt_wall_seconds"]
@@ -556,6 +558,7 @@ if __name__ == "__main__":
     for name in ("contract", "runtime", "classy-runtime", "attempt", "points"):
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--mode", choices=("points", "pilot"), default="points")
+    parser.add_argument("--pilot-config-sha256", help="exact reviewed discarded-pilot configuration pin")
     parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.worker:
@@ -563,7 +566,10 @@ if __name__ == "__main__":
     else:
         contract = validate_contract(read_json(args.contract))
         if args.mode == "pilot":
-            contract = pilot_admission(contract, read_json(args.points))
+            configuration, pin = json_identity(args.points)
+            if pin["sha256"] != args.pilot_config_sha256:
+                raise ValueError("reviewed parent/child pilot configuration identity differs")
+            contract = pilot_admission(contract, configuration)
         attempt = Path(args.attempt).absolute()
         if not attempt.is_relative_to(ROOT / "results") or any(p.is_symlink() for p in attempt.parents):
             raise ValueError("fresh nonsymlink ignored results path required")
