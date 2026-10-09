@@ -239,3 +239,12 @@ separate selected evidence bundle (47 objects, exact readback, manifest last):
 - URI: `s3://research-data-436908790672-eu-west-2/reproducible/experiments/lcdm-reference/attempts/direct-reference-20261009t011834z-95c992a81e24/versions/4febdabea8c7fbf4661570894961de626f26a9347d108317233b92ea19a44f0c/manifest.json`
 - SHA256: `f565c4662574f032e910068c8bc9fcedd5d4adedff9e3d616e578799bd58f5f1`
 - VersionId: `j9.re66X3FCuTtdoyEiAyftnRA0lBWl0`
+
+Independent empty-directory pulls of the numerical and direct-reference named
+manifests also completed:128 and47 selected files respectively. Comparison of
+original staging inventories with all three fresh retrieved bundles verified227
+files with zero SHA256 mismatches. This includes failed001 source/protocol,
+original qualification, appended correction, broader optimizer results and the
+direct command's refused prefix. Scientific run records were not rewritten.
+Worker model/launch evidence and shared job allocations accompany the bundles;
+all scientific builds/runs used one serial job with one OMP/BLAS thread.
