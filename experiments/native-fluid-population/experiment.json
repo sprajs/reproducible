@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "native-fluid-population",
+  "status": "blocked",
+  "question": "How do generalized Chaplygin expansion/distance and self-gravitating Plummer collisionless population responses change under explicit supplied synthetic assumptions?",
+  "origin": {
+    "kind": "development_smoke",
+    "description": "Owner-authorized new compiled physical-model campaign; no observational paper reproduction."
+  },
+  "assumptions": [
+    "Flat GR separately conserved dust plus generalized Chaplygin fluid with no radiation in this sweep.",
+    "Nonincreasing a within [1e-4,1], no perturbation or propagation inference.",
+    "Isotropic self-gravitating Newtonian Plummer equilibrium, mass traces tracer, nominal supplied SI G.",
+    "Empirical native support interval does not certify exact energy support."
+  ],
+  "limitations": [
+    "No observations, fitting, likelihood or posterior.",
+    "Native policy sensitivity and permanent independent engine tests are separate finite checks.",
+    "Prepared population admission tightening does not increase arithmetic precision."
+  ],
+  "inputs": [],
+  "execution": null,
+  "blockers": [
+    "Generic single-request runner has no registered route for dedicated compiled controller.",
+    "Final production SDK/source/build pins pending root integration and permanent scientific checks."
+  ],
+  "request_sha256": "bdfcb7823dcd780678a4d44f2d95b52d971308b9df8920e0c24c121642df548d"
+}
