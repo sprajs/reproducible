@@ -85,3 +85,19 @@ while execution was active; its numeric response is preserved without clean
 terminal acceptance. Subsequent runs used clean committed source. Plot receipts
 bind original native bytes and explicitly label rejected/incomplete numerical
 qualification. No tolerance was relaxed or refused coordinate removed.
+
+Persistence status at this checkpoint: full native attempts, original failures,
+corrected source snapshots, compile/runtime hashes, SDK/build inventories,
+qualification histories, PNG/SVG figures, plot receipts and startup records are
+selected as 92 files (10,545,338 bytes) in the retained local handoff
+`/workspace/work/native-campaign-evidence`. The named collection is
+`reproducible/experiments/native-model-campaign/attempts/20261009t021004z-60250b32e036`.
+Selection dry-run passed; three actual publication calls returned
+`RuntimeError` with no completion claim, including the explicit ambient-credential
+route using prepared AWS. No exact remote manifest or verified recovery route is
+available yet. This is an unpreserved bulk-evidence blocker; every local original
+and selected byte is retained. The pinned scientific source is
+775d9ab05fc4b14b128d7c895e31eabb90b282f5, subsequently merged as
+95f9b1f3d933132b7fb82c031b38b37d6ee116a2; the installed SDK build and library
+identities in request.json remain unchanged. No downloaded paper originals or
+rights-unverified excerpts enter this selection.
