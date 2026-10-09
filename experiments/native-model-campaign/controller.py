@@ -153,13 +153,23 @@ def run_process(argv, root, limits, name):
         resource.setrlimit(resource.RLIMIT_FSIZE, (limits["stdout_bytes"], limits["stdout_bytes"]))
     started = time.monotonic()
     with (root / (name + ".stdout")).open("xb") as out, (root / (name + ".stderr")).open("xb") as err:
-        result = subprocess.run(argv, stdout=out, stderr=err, timeout=limits["wall_seconds"],
-                                env={**os.environ, **ENV}, preexec_fn=child_limits)
-    record = {"argv": argv, "returncode": result.returncode, "wall_seconds": time.monotonic() - started,
+        timeout_error = None
+        try:
+            result = subprocess.run(argv, stdout=out, stderr=err, timeout=limits["wall_seconds"],
+                                    env={**os.environ, **ENV}, preexec_fn=child_limits)
+            returncode = result.returncode
+        except subprocess.TimeoutExpired as exc:
+            timeout_error = exc
+            returncode = None
+    record = {"argv": argv, "returncode": returncode, "timed_out": timeout_error is not None,
+              "termination_observation": "subprocess.run killed and waited for child after timeout" if timeout_error else "child exited",
+              "wall_seconds": time.monotonic() - started,
               "threads": ENV, "stdout": pin(root / (name + ".stdout"), limits["stdout_bytes"]),
               "stderr": pin(root / (name + ".stderr"), limits["stdout_bytes"])}
     write(root / (name + ".process.json"), record)
-    require(result.returncode == 0, name + " refused; raw process outputs retained")
+    if timeout_error is not None:
+        raise timeout_error
+    require(returncode == 0, name + " refused; raw process outputs retained")
     return record
 
 

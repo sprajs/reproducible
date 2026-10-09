@@ -55,3 +55,33 @@ S3 route, dry-run admission, exact-version object readback, manifest last and
 fresh-directory restoration. The source-review bundle remains a separate
 Prospector-owned pin; raw papers and unverified redistribution assets are absent.
 Actual execution, checks and immutable result pins are appended below after runs.
+
+2026-10-09 actual production-SDK campaign: corrected quick-002 completed 54
+cases/280 rows; broader-003 completed 54 cases/630 rows. All four native
+endpoint, unsupported-domain, singular-partial and lambda-zero geometry controls
+passed in both. The frozen empirical qualification remains
+`rejected_or_incomplete`: quick has 1,031 measured comparisons, one scalar
+constraint-residual difference above its 1e-10 diagnostic budget and three
+refined NFW shear conditioning refusals. Broader has 2,347 measured comparisons,
+six constraint-residual differences and 18 NFW conditioning refusals across
+Delta Sigma, convergence, shear and deflection. Accepted physical metrics do
+not erase these withheld outputs or qualify a complete aggregate campaign.
+
+The finite scalar anchor produces kinetic-dominated past states for nonzero
+lambda; these are predictions of that supplied anchor, not a demonstrated
+attractor history. Increasing decay rate suppresses the remaining parent
+fraction; the zero-rate control retains stable/parent matter as daughter
+radiation dilutes. DGP growth differs across supplied matter fractions while
+the infinite-crossover-length endpoint retains exact Einstein–de Sitter growth.
+Halo projections and curved distances are separate conditional predictions;
+none is an observed fit.
+
+Original quick-001 and broader-002 retain the earlier Hessian output keys
+`tidal_radial_s2`/`tidal_tangential_s2`; those names were incorrect because the
+values are potential Hessian eigenvalues, not the opposite-signed acceleration
+tidal tensor. Corrected attempts rename them without numeric changes.
+Broader-001 retained a terminal clean-source refusal after plot source was added
+while execution was active; its numeric response is preserved without clean
+terminal acceptance. Subsequent runs used clean committed source. Plot receipts
+bind original native bytes and explicitly label rejected/incomplete numerical
+qualification. No tolerance was relaxed or refused coordinate removed.
