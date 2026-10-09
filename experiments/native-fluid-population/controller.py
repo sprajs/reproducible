@@ -184,4 +184,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     result = execute(args)
     print(json.dumps({'execution': result['status'], 'numerical': result.get('numerical', {}).get('status'), 'errors': result['errors']}))
-    raise SystemExit(result['status'] != 'completed' or result['numerical']['failures'])
+    raise SystemExit(result['status'] != 'completed' or bool(result.get('numerical', {}).get('failures', True)))
