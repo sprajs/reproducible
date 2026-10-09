@@ -1,0 +1,128 @@
+{
+  "bbn_table": {
+    "bytes": 11213,
+    "path": "external/bbn/sBBN_2017.dat",
+    "sha256": "b72607a3a2f9134130cb2c09c0140d4f68c5916962e83fc6740a664bd5b69ea5"
+  },
+  "bounds": {
+    "A_planck": [
+      0.9,
+      1.1
+    ],
+    "H0": [
+      40,
+      100
+    ],
+    "logA": [
+      1.61,
+      3.91
+    ],
+    "n_s": [
+      0.8,
+      1.2
+    ],
+    "omega_b": [
+      0.01,
+      0.035
+    ],
+    "omega_cdm": [
+      0.05,
+      0.25
+    ],
+    "tau_reio": [
+      0.01,
+      0.14
+    ]
+  },
+  "calibration_prior": {
+    "applications": 1,
+    "kind": "truncated_normal_in_dA_planck",
+    "mean": 1.0,
+    "sigma": 0.0025
+  },
+  "candidate_identity": {
+    "bytes": 9442,
+    "path": "designs/candidate-class-planck-primary-six-parameter-v1.json",
+    "repository": "sprajs/prospector",
+    "revision": "508b413bc05ce38148823923795898bb7ef073ec",
+    "sha256": "2211b45de6876106557e30e0bb7ed1c696e165c5cb98c397f0a34c6e2b15e7d3",
+    "snapshot": "candidate.json"
+  },
+  "class_fixed": {
+    "N_ncdm": 1,
+    "N_ur": 2.0327983725164924,
+    "Omega_fld": 0.0,
+    "Omega_k": 0.0,
+    "Omega_scf": 0.0,
+    "P_k_ini type": "analytic_Pk",
+    "T_cmb": 2.7255,
+    "T_ncdm": 0.71611,
+    "YHe": "BBN",
+    "alpha_s": 0.0,
+    "deg_ncdm": 1.0,
+    "feedback model": "emu_dmonly",
+    "gauge": "synchronous",
+    "helium_fullreio_redshift": 3.5,
+    "helium_fullreio_width": 0.5,
+    "hmcode_version": "2016",
+    "ic": "ad",
+    "k_pivot": 0.05,
+    "ksi_ncdm": 0.0,
+    "l_max_scalars": 2508,
+    "lensing": "yes",
+    "m_ncdm": 0.06,
+    "modes": "s",
+    "non linear": "hmcode",
+    "output": "tCl,pCl,lCl,mPk",
+    "recombination": "HyRec",
+    "reio_parametrization": "reio_camb",
+    "reionization_exponent": 1.5,
+    "reionization_width": 0.5,
+    "sBBN file": "external/bbn/sBBN_2017.dat"
+  },
+  "coordinates": [
+    "omega_b",
+    "omega_cdm",
+    "H0",
+    "logA",
+    "n_s",
+    "tau_reio",
+    "A_planck"
+  ],
+  "likelihood_components": [
+    "commander_TT",
+    "simall_EE",
+    "plik_lite_TTTEEE"
+  ],
+  "limits": {
+    "address_bytes": 4294967296,
+    "attempt_bytes": 2147483648,
+    "attempt_wall_seconds": 3600,
+    "evaluation_wall_seconds": 180,
+    "file_bytes": 134217728,
+    "logs_bytes": 16777216,
+    "max_evaluations": 512
+  },
+  "lmax": 2508,
+  "measure": "domega_b domega_cdm dH0 dlogA dn_s dtau_reio dA_planck",
+  "numerical_policies": {
+    "cl-permille": {
+      "delta_l_max": 1000,
+      "hyper_flat_approximation_nu": 7000.0,
+      "transfer_neglect_delta_k_S_e": 0.13,
+      "transfer_neglect_delta_k_S_t0": 0.17,
+      "transfer_neglect_delta_k_S_t1": 0.05,
+      "transfer_neglect_delta_k_S_t2": 0.17
+    },
+    "default": {}
+  },
+  "numerical_qualification": {
+    "claim": "empirical representative/boundary/refinement comparisons, not global error certificate",
+    "maximum_absolute_loglike_difference": 0.1,
+    "status": "pending"
+  },
+  "physical_indicator": "CLASS_Omega_Lambda_nonnegative",
+  "production_policy": "default",
+  "schema": "planck-primary-reference-contract/v1",
+  "status": "reviewed"
+}
