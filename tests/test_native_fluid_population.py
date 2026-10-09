@@ -1,5 +1,4 @@
 """Adversarial admission fixtures, not scientific model calculations."""
-import copy
 import importlib.util
 import json
 from pathlib import Path
@@ -47,3 +46,8 @@ class FluidPopulationAdmission(unittest.TestCase):
         for raw in ('{"x":1e999}', '{"x":NaN}', '{"x":1,"x":2}'):
             with self.assertRaises(ValueError):
                 c.strict_json(raw)
+
+    def test_cli_exit_is_integer_and_distinguishes_gates(self):
+        self.assertEqual(c.exit_code({'status': 'completed', 'numerical': {'failures': []}}), 0)
+        self.assertEqual(c.exit_code({'status': 'completed', 'numerical': {'failures': [{}]}}), 1)
+        self.assertEqual(c.exit_code({'status': 'failed'}), 1)

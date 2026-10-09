@@ -176,6 +176,10 @@ def execute(args):
     return record
 
 
+def exit_code(record):
+    return int(record['status'] != 'completed' or bool(record.get('numerical', {}).get('failures', True)))
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('sdk', 'engine-source', 'build-manifest', 'attempt'):
@@ -184,4 +188,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     result = execute(args)
     print(json.dumps({'execution': result['status'], 'numerical': result.get('numerical', {}).get('status'), 'errors': result['errors']}))
-    raise SystemExit(result['status'] != 'completed' or bool(result.get('numerical', {}).get('failures', True)))
+    raise SystemExit(exit_code(result))

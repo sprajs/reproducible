@@ -68,3 +68,15 @@ plots use named S3, exact-version readback, manifest-last and fresh restoration.
 Raw papers/rights-unverified excerpts are excluded. Actual findings and archive
 pins follow after execution; final merge also requires the engine dependency's
 merge and exact-main CI.
+
+2026-10-09: final scientific source 9f51b53, with exact SDK/build/library pins in
+request.json, produced quick-002 (32 cases/512 rows, 1,540 admitted comparisons)
+and broader-001 (32/1,608, 4,088). Both had zero comparison failures and passed
+all 11 compiled endpoint/refusal controls. All 56/112 q=1 native rows were
+ambiguous conditioning refusals with consistent empirical energy diagnostics;
+accuracy there remains unassessed. Tightening budgets changed no physical
+assumptions. Original quick-001 passed native execution and qualification but
+its Python caller exited 1 because an empty failure list was passed to
+SystemExit. That original/source and call observation remain immutable; the
+integer-exit correction was rerun into fresh attempts. Provisional SDK use was
+strict API compilation only, with no physical execution.
