@@ -44,8 +44,8 @@
     "bytes": 10363,
     "path": "designs/candidate-class-planck-primary-six-parameter-v2.json",
     "repository": "sprajs/prospector",
-    "revision": "f59cf7c86a4a8391c85529223db22762e9f278ac",
-    "sha256": "d249fc8664099d174d250a652553fd09dde846bd3d4877552b1b79f0eb6c16a4",
+    "revision": "9307a58ddaed221e3f1dced8b935fa40ea9b5d53",
+    "sha256": "b486e38f59e9561b6ee9ed1e32a3db85a2505fcdc77d2f1e214dfcf5670f16df",
     "snapshot": "candidate-v2.json"
   },
   "class_fixed": {
@@ -123,7 +123,15 @@
     "source": "explicit conservative conditional project target; v1 retained unchanged",
     "status": "pending"
   },
+  "physical_conditioning_normalization": 1.0,
   "physical_indicator": "CLASS_Omega_Lambda_nonnegative",
+  "physical_support_proof": {
+    "claim": "Lambda indicator redundant on this box; exact runtime closure check retained",
+    "conservative_fixed_extra_density_upper_bound": 0.001,
+    "maximum_baryon_plus_cdm": 0.208,
+    "minimum_h_squared": 0.25,
+    "remaining_margin_lower_bound": 0.041
+  },
   "production_policy": "cl-permille",
   "schema": "planck-primary-reference-contract/v1",
   "status": "reviewed"

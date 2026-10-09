@@ -209,14 +209,14 @@
     {
       "reference_id": "class-planck-primary-six-parameter-v2",
       "path": "references/lcdm/class-planck-primary-six-parameter-v2.json",
-      "sha256": "9af4a7bcf0d5cb5bffc8e29d1650ec15ca21fc55f3068d68ff53753fa97b1bc9"
+      "sha256": "a192c531bf307f1e17a8be101abdca3d911dce34e27b27e8e006507eb253715f"
     }
   ],
   "source_contracts": [
     {
       "contract_id": "foundation-supported-primary-and-joint-contract-v2",
       "path": "register/contracts/foundation-supported-primary-and-joint-contract-v2.json",
-      "sha256": "156464ffd2d186485fee096dc5154a7e2e311817122bbc0848d20c96a4c37eb9"
+      "sha256": "9be1f08361c372e70ffa9edac9ec5be1037233f0fa1920bd81298edd3fa16e67"
     }
   ]
 }

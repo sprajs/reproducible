@@ -267,7 +267,8 @@ def execute(args):
     record = {"schema": "planck-primary-reference-attempt/v1", "status": "failed",
               "started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "mode": args.mode, "contract": contract, "thread_environment": THREAD_ENV,
-              "physical_conditioning_normalization": None, "inference_qualified": False}
+              "physical_conditioning_normalization": contract.get("physical_conditioning_normalization"),
+              "inference_qualified": False}
     score, pins, post_error = None, [], None
     def identity(path):
         raw = bounded_bytes(path)
