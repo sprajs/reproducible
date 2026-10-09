@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "contract_id": "foundation-relative-and-calibrated-sn-working-v1",
+  "title": "Distinct relative Pantheon+ and calibrated SH0ES symmetrized-release working factors",
+  "review_id": "2026-10-09-foundation-working-joint-source-claims",
+  "paper_ids": [
+    "arxiv:2202.04077v2"
+  ],
+  "scopes": [
+    {
+      "scope_id": "M2",
+      "title": "Separate relative, calibrated and compatibility-stress targets",
+      "paper_ids": [
+        "arxiv:2202.04077v2"
+      ],
+      "checked_claim": "Relative producer selects exactly zHD>0.01:1590 released rows, including10 flagged calibrator rows used as cosmological distances. Calibrated producer selects zHD>0.01 OR IS_CALIBRATOR:1657 rows with77 calibrators using CEPH_DIST. Both use m_b_corr and the same released STAT+SYS covariance selected in original order. Relative mean=5log10[(1+zHD)(1+zHEL)DA(zHD)/Mpc]+25+M for every selected row; calibrated flagged rows instead use CEPH_DIST+M. A new explicit normalized dM uniform[-21,-17] mag and Cs=(C_selected+C_selected^T)/2 define a separate Gaussian working posterior. Host covariance/CEPH_DIST uncertainty is already included and is used once.",
+      "unresolved": "No exact original producer GaussianLikelihood inversion/triangle or self.kind reproduction is claimed. New direct CLASS.angular_distance(zHD) and Cs arithmetic identity need consumer numerical/row-order/SPD/refinement and actual posterior-residual sensitivity checks. Relative1590 covariance qualification is distinct from calibrated1657 controls. Original nonsymmetric C remains structurally refused; empirical joint-dependence and absolute-calibration qualification remain open."
+    }
+  ],
+  "source_assets": [
+    {
+      "id": "sn-working-table",
+      "url": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-finite90-original-dataset-custody-20261009/versions/e8f07a0377c5b65ed14d02f539dd0beb6fdbd4156c927774c261f4243510d9b6/files/inputs/released-supernova-distances/024-000-sn-table.dat",
+      "sha256": "1cb0fc379ef066afdc2ffd1857681cc478024570d8a3eba284fb645775198cf8",
+      "role": "released_data_or_caller",
+      "conditioning": "Exact fresh-restored source bytes; table/callers/readme checked; full covariance source semantics and historical structural refusal retained"
+    },
+    {
+      "id": "sn-working-covariance",
+      "url": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-finite90-original-dataset-custody-20261009/versions/e8f07a0377c5b65ed14d02f539dd0beb6fdbd4156c927774c261f4243510d9b6/files/inputs/released-supernova-distances/027-003-sn-covariance.cov",
+      "sha256": "abf806d966485e64afdb359c87bffc0ecc00d05eff0a31ced66f247385df0fdc",
+      "role": "released_data_or_caller",
+      "conditioning": "Exact fresh-restored source bytes; table/callers/readme checked; full covariance source semantics and historical structural refusal retained"
+    },
+    {
+      "id": "sn-working-calibrated-caller",
+      "url": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-finite90-original-dataset-custody-20261009/versions/e8f07a0377c5b65ed14d02f539dd0beb6fdbd4156c927774c261f4243510d9b6/files/inputs/released-supernova-distances/025-001-Pantheon+SH0ES_cosmosis_likelihood.py",
+      "sha256": "345fac3781a5cb930b95e91c1c07eb17dcf99b441703bb5e449477519240a59d",
+      "role": "released_data_or_caller",
+      "conditioning": "Exact fresh-restored source bytes; table/callers/readme checked; full covariance source semantics and historical structural refusal retained"
+    },
+    {
+      "id": "sn-working-relative-caller",
+      "url": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-finite90-original-dataset-custody-20261009/versions/e8f07a0377c5b65ed14d02f539dd0beb6fdbd4156c927774c261f4243510d9b6/files/inputs/released-supernova-distances/026-002-Pantheon+_only_cosmosis_likelihood.py",
+      "sha256": "7bc222fedc11a3d496ef4c5c18b2e111842dcef4d2bb65d22e9597eb9be191a4",
+      "role": "released_data_or_caller",
+      "conditioning": "Exact fresh-restored source bytes; table/callers/readme checked; full covariance source semantics and historical structural refusal retained"
+    },
+    {
+      "id": "sn-working-readme",
+      "url": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-finite90-original-dataset-custody-20261009/versions/e8f07a0377c5b65ed14d02f539dd0beb6fdbd4156c927774c261f4243510d9b6/files/inputs/released-supernova-distances/028-004-sn-readme.txt",
+      "sha256": "e2b0d262757f01c1794a938c78d32600a21e289b2a0320e5c660c4c6fc9aa87e",
+      "role": "released_data_or_caller",
+      "conditioning": "Exact fresh-restored source bytes; table/callers/readme checked; full covariance source semantics and historical structural refusal retained"
+    }
+  ],
+  "limitations": [
+    "Brout SecII Eqs9/14/15,III.1,IV.2–4 andAppendixC were checked. Its author Planck+BAO+Pantheon+ combinations exclude SH0ES as incompatible; this is an interpretation caveat, not a mathematical prohibition on a separately named exploratory compatibility-stress fit.",
+    "Natural next joint baseline uses the relative target without Cepheid calibration. Calibrated SN-alone and an optional primary+DESI+SH0ES stress posterior must have distinct identities, label possible incompatibility and preserve per-factor diagnostics.",
+    "Relative1590 is not obtained by removing every calibrator flag from calibrated1657: only67 low-z flagged rows are removed;10 flagged rows remain and use cosmological redshift distances. Calibrated selection uses77 flags, while the paper describes81 calibrator light curves; this serialization difference is retained without inventing equivalence.",
+    "zHD is the released peculiar-velocity-corrected CMB-frame Hubble-diagram redshift; zHEL is heliocentric and supplies the observer redshift factor. A single CLASS luminosity_distance(zHD) without (1+zHEL)/(1+zHD) correction would change the source mean.",
+    "Fixed m_b_corr already incorporates SALT standardization, selection/bias/host corrections and conditioned reduction. No independent SALT-training, diagonal error, Riess H0, calibrated-M Gaussian or copied host-modulus uncertainty factor is added.",
+    "Cs is an explicitly named symmetrized-release approximation. Asymmetry is not proven rounding and does not bound missing symmetric systematic error. Preserve exact Cs bytes/arithmetic policy; no jitter, clipping or substitution for the original C.",
+    "Upper/lower symmetric-triangle completions and whitened perturbation bounds plus actual residual-specific quadratic/logdet changes are required. Engineering synthetic/MU_SH0ES controls do not qualify CLASS posterior tails. The project sensitivity budget is abs Delta lnL<=0.01 at declared representative posterior/tail states.",
+    "Unknown inherited producer interpolation and inverse policy limit release reproduction, not definition of the new direct-CLASS working target. No original nonsymmetric inverse is admitted as a covariance likelihood."
+  ],
+  "qualification": {
+    "numerically_executed": false,
+    "scientifically_qualified": false
+  }
+}

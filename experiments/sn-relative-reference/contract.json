@@ -1,0 +1,122 @@
+{
+  "schema": "sn-relative-actual-model-point-pilot-policy/v1",
+  "priors": {
+    "omega_b": [
+      0.018,
+      0.028
+    ],
+    "omega_cdm": [
+      0.08,
+      0.18
+    ],
+    "H0": [
+      50.0,
+      90.0
+    ],
+    "M": [
+      -21.0,
+      -17.0
+    ]
+  },
+  "proper_logprior": 1.8325814637483102,
+  "class_physical_fixed": {
+    "N_ncdm": 1,
+    "N_ur": 2.0327983725164924,
+    "Omega_fld": 0.0,
+    "Omega_k": 0.0,
+    "Omega_scf": 0.0,
+    "P_k_ini type": "analytic_Pk",
+    "T_cmb": 2.7255,
+    "T_ncdm": 0.71611,
+    "YHe": "BBN",
+    "alpha_s": 0.0,
+    "deg_ncdm": 1.0,
+    "feedback model": "emu_dmonly",
+    "gauge": "synchronous",
+    "helium_fullreio_redshift": 3.5,
+    "helium_fullreio_width": 0.5,
+    "hmcode_version": "2016",
+    "ic": "ad",
+    "k_pivot": 0.05,
+    "ksi_ncdm": 0.0,
+    "l_max_scalars": 2508,
+    "lensing": "yes",
+    "m_ncdm": 0.06,
+    "modes": "s",
+    "non linear": "hmcode",
+    "output": "tCl,pCl,lCl,mPk",
+    "recombination": "HyRec",
+    "reio_parametrization": "reio_camb",
+    "reionization_exponent": 1.5,
+    "reionization_width": 0.5,
+    "sBBN file": "/workspace/work/foundation/reproducible-inference/.work/reference-runtime/classy-build-002/source/class_public-0ceb7a9a4c1e444ef5d5d56a8328a0640be91b18/external/bbn/sBBN_2017.dat",
+    "hyrec_path": "/workspace/work/foundation/reproducible-inference/.work/reference-runtime/classy-build-002/source/class_public-0ceb7a9a4c1e444ef5d5d56a8328a0640be91b18/external/HyRec2020/",
+    "Galli_file": "/workspace/work/foundation/reproducible-inference/.work/reference-runtime/classy-build-002/source/class_public-0ceb7a9a4c1e444ef5d5d56a8328a0640be91b18/external/heating/Galli_et_al_2013.dat",
+    "A_s": 2.1e-09,
+    "n_s": 0.9660499,
+    "tau_reio": 0.05430842
+  },
+  "background_policies": {
+    "production": {
+      "background_Nloga": 40000,
+      "tol_background_integration": 1e-10,
+      "tol_ncdm_bg": 1e-05
+    },
+    "reference1": {
+      "background_Nloga": 80000,
+      "tol_background_integration": 1e-12,
+      "tol_ncdm_bg": 1e-07
+    },
+    "reference2": {
+      "background_Nloga": 160000,
+      "tol_background_integration": 2.5e-13,
+      "tol_ncdm_bg": 1e-08
+    }
+  },
+  "maximum_native_reference_delta_lnL": 1e-06,
+  "maximum_background_refinement_delta_lnL": 0.01,
+  "maximum_profile_M_difference_mag": 1e-10,
+  "limits": {
+    "hard_wall_seconds": 300,
+    "cpu_seconds_per_process": 240,
+    "address_space_bytes_per_process": 2147483648,
+    "per_file_hard_bytes": 134217728,
+    "output_final_admission_max_bytes": 268435456,
+    "thread_limit": 1,
+    "maximum_native_evaluations": 192,
+    "actualplanned_evaluations": 144,
+    "maximum_CLASS_solves": 36
+  },
+  "target": "relative1590 conditioned background reference, proper uniform omega_b/omega_cdm/H0/M measure",
+  "source": {
+    "repository": "sprajs/prospector",
+    "revision": "2a7b21cb7f93983434f1cea9bd707ea2547044a2",
+    "path": "register/contracts/foundation-relative-and-calibrated-sn-working-v1.json",
+    "snapshot": "candidate.json",
+    "sha256": "8430dc7a5e916ca4a685dd6d141d37eb3eed4c870f830d26cd2cc5db61f15858"
+  },
+  "selection": "zHD>0.01 in original occurrence order;1590 includes10 IS_CALIBRATOR rows with cosmological mean",
+  "mean": "m_b_corr mean = 5log10[(1+zHD)(1+zHEL) CLASS.angular_distance(zHD)/Mpc]+25+M, all relative rows",
+  "covariance": {
+    "sha256": "5edd58efb7a29825a29246a29c90e3d95ddcabe9cf7cdb063b271824f221c66e",
+    "bytes": 20224800,
+    "encoding": "1590x1590 row-major binary64 big-endian",
+    "original_selected_equals_Cs": true,
+    "averaging_repair_needed": false,
+    "jitter_or_projection": "none"
+  },
+  "normalization": "-0.5*(r^T C^-1 r + logdetC + 1590log2pi)",
+  "inference_status": "actual finite points and conditionalM fits; posterior remains unqualified",
+  "prior_ownership": "one proper flat prior per four varied coordinates; no Cepheid, external H0, calibration or CMB factor",
+  "interpretation": "fixed GR/flat/fixed neutrino/BBN/recombination physical context; spectral/reionization anchor conditioned; H0-M near degeneracy and prior measure prevent absolute H0 calibration claim",
+  "runtime": "exact private evidence and prior CLASSy/SDK manifests; no implicit source/build upgrade",
+  "failure_policy": "solver/native failures in physical support stop attempt; never logL=-infinity or a rejected sampler move",
+  "posterior_requirements": {
+    "engine": "external mature sampler, new source/policy and lease before execution",
+    "independent_chains": 4,
+    "Rhat_max": 1.01,
+    "bulk_tail_ESS_min": 400,
+    "mean_MCSE_max_SD": 0.05,
+    "prior_tail_and_support_checks": true
+  }
+}
