@@ -80,3 +80,16 @@ its Python caller exited 1 because an empty failure list was passed to
 SystemExit. That original/source and call observation remain immutable; the
 integer-exit correction was rerun into fresh attempts. Provisional SDK use was
 strict API compilation only, with no physical execution.
+
+At A_s=.7,a=.1, native E is 22.5940 for alpha=0 versus 26.1420 for alpha=1;
+these distinct backgrounds were not replaced with dust plus Lambda. Population
+plots retain compact non-Gaussian speed profiles and withheld boundary values.
+
+All 68 selected files (10,072,916 bytes), including the caller failure, were
+published and freshly restored byte-identically:
+`s3://research-data-436908790672-eu-west-2/reproducible/experiments/native-fluid-population/attempts/20261009t032441z-51fcfc5ec757/versions/6072deea7003a53d2f1c7b8cb3fd419c98b20aa313da9e69759e0c44469665f7/manifest.json`,
+SHA256 `51ac32c39d4bee3474067dc6a0563fdbbe68b69c4c2aabdeb08921272523bf12`,
+VersionId `O4MiKsebFLFqXr0_IxeAHoZ1g8DSNCKj`, `research-named-manifest/v1`.
+Both PNGs replayed byte-identically from restored source/native JSON; original
+SVGs also restored exactly. This recovery adds no numerical certification.
+Locals are retained. Engine PR69 merged e58fcd5 with exact-main CI success.
