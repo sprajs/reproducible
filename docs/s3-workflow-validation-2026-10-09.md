@@ -98,7 +98,8 @@ pinned Debian Fortran/header fallback. No scientific source was repinned.
 
 The current catalog DESI entry is acquisition-only. Separately, the authoritative
 historical snapshot route restored exact-version S3 payload bytes for both DESI
-full13 files and a 47,188-byte calibrated SDSS REDSHIFT_CMB table: selected total
+full13 files and a 47,188-byte released
+Pantheon+ REDSHIFT_CMB redshift/velocity-override reduction: selected total
 50,207 bytes. Original release lengths/SHA256, final DH/DM ordering and every
 covariance entry survived admission. No 1.42GB preservation bundle was fetched;
 the historical 39,299-occurrence claim was not repeated as a new full restore.
@@ -145,7 +146,8 @@ failure is retained. BAO ratios and scores are unchanged under cl_permille. Tabl
 sampling changes BAO ratios by at most 1.477e-7 and chi2 by 0.00028768. Integration
 refinement changes BAO ratios by 1.194e-9 and chi2 by 3.134e-7; its printed matter
 k axes have no exact common coordinates, so the common-axis Pk gate refuses,
-while the separately labelled interpolation diagnostic remains available. Table
+while actual linear-P interpolation diagnostics retained by
+`theory.product_difference` remain separately labelled and uncertified. Table
 refinement shares only four printed k nodes, so its full-grid Pk qualification
 also remains unassessed; passing those four nodes does not qualify a spectrum.
 An appended correction preserves the initial common-node assessment and narrows
@@ -177,7 +179,7 @@ Broader local manifest SHA256 is
 The named manifest uses `research-named-manifest/v1`. Its 52 selected generated/
 mixed evidence files were admitted by dry run, individually read back by exact
 VersionId and content hashes, then the completion manifest was published last.
-This is a reconstructable selected evidence bundle, not the complete767-file raw
+This is a reconstructable selected evidence bundle, not the complete 767-file raw
 CLASS-table attempt; explicit omission/regeneration ancestry is retained within
 its provenance. Public input acquisitions remain lawful pinned routes rather
 than an assertion of redistribution rights.
@@ -195,3 +197,45 @@ its prepared-tool activation, `storage_startup.py --ambient-credentials` and the
 exact named-manifest pull route; an example path is not a portable credential
 binding. The direct LCDM reference command requires the ignored parent
 `results/lcdm-reference` to exist before its fresh attempt can be admitted.
+
+The advertised `experiments/lcdm-reference/run.py` command was also exercised
+directly with a runtime configuration binding that same exact CLASS build.
+After creating its required ignored parent directory, all four anchor/precision/
+ns-minus/ns-plus cases completed in 28.5281 seconds. Prediction execution passed;
+its own gates retain inference/interpretation blocked and numerical scope only
+empirical differences. Anchor drag is 147.054261 Mpc at z=1059.928342. Maximum
+precision TT/EE/TE differences are 0.4618998/0.0102618/0.0369075 microkelvin squared.
+The direct prediction record SHA256 is
+`2e4250667abb2912fd626320ad6ec23f32b7be91bcfe52b4a139df9294692e78`.
+The first invocation's missing-parent pre-admission refusal is preserved
+separately; it created no attempt directory and supplies no scientific evidence.
+
+That exact quick manifest was pulled into another empty directory; all 52 selected
+objects passed exact-VersionId length/SHA256 checks. Saved DESI fits and separate
+Planck scores were retrieved unchanged. A distinct plotting replay copied the
+retrieved product JSONs and rerendered without recomputing physics: both PNGs
+matched the original SHA256 exactly (`ed359670e39a20716938ae042f0c074ae213a65838d44ae2f84a9531b2280dbc`
+for DESI fit and `e11e7e1ae4be0a11f2f92164e8be749b22e3875ef7a347de9b418b1bf7f8ec3d`
+for predictions). Thus published score/plot retrieval was actually tested rather
+than inferred from upload success.
+
+The selected numerical bundle preserves the original failed pre-CLASS harness,
+corrected fourteen-case execution, rejected qualification and appended Pk scope
+correction, exact source/protocol/config snapshots, and broader optimizer profile.
+It uses the same named-manifest format; its original attempts are not rewritten.
+
+- URI: `s3://research-data-436908790672-eu-west-2/reproducible/experiments/observational-cosmology/attempts/numerical-sensitivity-20261009t011616z-31db979e7eee/versions/78a895946a7d2f942158c116389a808a5645ae018143f612f6514e13f84aae30/manifest.json`
+- SHA256: `8146db5abc70788728655b80af1579460dd822490b808200ab20717186d07f7b`
+- VersionId: `ibqwkuXstnqemUQIMHclvTQ9pByisOOM`
+
+All 128 selected numerical evidence objects were individually verified through
+exact-version readback before manifest-last completion. Transfer/retrieval checks
+establish preservation, not acceptance of its deliberately retained numerical
+failures. The same private-preservation rights scope remains explicit.
+
+The direct four-case reference and its preserved pre-admission failure have a
+separate selected evidence bundle (47 objects, exact readback, manifest last):
+
+- URI: `s3://research-data-436908790672-eu-west-2/reproducible/experiments/lcdm-reference/attempts/direct-reference-20261009t011834z-95c992a81e24/versions/4febdabea8c7fbf4661570894961de626f26a9347d108317233b92ea19a44f0c/manifest.json`
+- SHA256: `f565c4662574f032e910068c8bc9fcedd5d4adedff9e3d616e578799bd58f5f1`
+- VersionId: `j9.re66X3FCuTtdoyEiAyftnRA0lBWl0`
