@@ -98,7 +98,7 @@
     "address_bytes": 4294967296,
     "attempt_bytes": 2147483648,
     "attempt_wall_seconds": 7200,
-    "evaluation_wall_seconds": 180,
+    "evaluation_wall_seconds": 600,
     "file_bytes": 134217728,
     "logs_bytes": 16777216,
     "max_evaluations": 512
@@ -114,11 +114,52 @@
       "transfer_neglect_delta_k_S_t1": 0.05,
       "transfer_neglect_delta_k_S_t2": 0.17
     },
-    "default": {}
+    "default": {},
+    "reference1": {
+      "accurate_lensing": 1,
+      "delta_l_max": 1000,
+      "hyper_flat_approximation_nu": 7000.0,
+      "k_step_sub": 0.025,
+      "k_step_super": 0.001,
+      "l_linstep": 20,
+      "l_logstep": 1.06,
+      "num_mu_minus_lmax": 140,
+      "q_linstep": 0.225,
+      "tol_ncdm": 0.0005,
+      "tol_ncdm_bg": 5e-06,
+      "tol_ncdm_synchronous": 0.0005,
+      "tol_perturbations_integration": 5e-06,
+      "tol_thermo_integration": 5e-07,
+      "transfer_neglect_delta_k_S_e": 0.13,
+      "transfer_neglect_delta_k_S_t0": 0.17,
+      "transfer_neglect_delta_k_S_t1": 0.05,
+      "transfer_neglect_delta_k_S_t2": 0.17
+    },
+    "reference2": {
+      "accurate_lensing": 1,
+      "delta_l_max": 1000,
+      "hyper_flat_approximation_nu": 7000.0,
+      "k_step_sub": 0.0125,
+      "k_step_super": 0.0005,
+      "l_linstep": 10,
+      "l_logstep": 1.03,
+      "num_mu_minus_lmax": 280,
+      "q_linstep": 0.1125,
+      "tol_ncdm": 0.00025,
+      "tol_ncdm_bg": 2.5e-06,
+      "tol_ncdm_synchronous": 0.00025,
+      "tol_perturbations_integration": 2.5e-06,
+      "tol_thermo_integration": 2.5e-07,
+      "transfer_neglect_delta_k_S_e": 0.13,
+      "transfer_neglect_delta_k_S_t0": 0.17,
+      "transfer_neglect_delta_k_S_t1": 0.05,
+      "transfer_neglect_delta_k_S_t2": 0.17
+    }
   },
   "numerical_qualification": {
     "claim": "empirical representative/boundary/refinement comparisons, not global error certificate",
     "maximum_absolute_loglike_difference": 0.1,
+    "reference_policy_rationale": "Orthogonal perturbation integration, k/q/ell sampling, lensing integration, thermodynamics and ncdm refinement; further halving. Finite loglike gates unchanged.",
     "requirement": "64 cosmological corners x both calibration ends, 16 seeded interiors, anchor; 8 spread/worst refinements, further refinement <=.05; production-reference <=.1; future pilot/posterior 32 strata",
     "source": "explicit conservative conditional project target; v1 retained unchanged",
     "status": "pending"

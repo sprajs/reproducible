@@ -22,6 +22,22 @@ adapter = controller.adapter
 
 
 class PrimaryReferenceTest(unittest.TestCase):
+    def test_normalization_requires_exact_admitted_v2_proof(self):
+        import copy
+        root = PATH.parent
+        broad = json.loads((root / "contract.json").read_text())
+        narrow = json.loads((root / "contract-v2.json").read_text())
+        self.assertEqual(controller.validate_contract(copy.deepcopy(narrow))["physical_conditioning_normalization"], 1)
+        for original, value in [(broad, 1), (broad, "1"), (narrow, "1"), (narrow, 2), (narrow, True)]:
+            changed = copy.deepcopy(original)
+            changed["physical_conditioning_normalization"] = value
+            with self.assertRaisesRegex(ValueError, "normalization1"):
+                controller.validate_contract(changed)
+        changed = copy.deepcopy(narrow)
+        changed["physical_support_proof"]["remaining_margin_lower_bound"] = .05
+        with self.assertRaisesRegex(ValueError, "normalization1"):
+            controller.validate_contract(changed)
+
     def test_numerical_failure_never_becomes_negative_infinity(self):
         contract = {"bounds": {name: [0, 100] for name in adapter.COORDINATES},
                     "calibration_prior": {"mean": 1, "sigma": .0025},

@@ -154,6 +154,21 @@ def validate_contract(contract):
     source_contract = candidate["minimal_test"]["parameter_choices"]["consumer_contract"]
     if any(contract.get(key) != value for key, value in source_contract.items()):
         raise ValueError("consumer physical/prior semantics differ from source candidate")
+    normalization = contract.get("physical_conditioning_normalization")
+    proof = contract.get("physical_support_proof")
+    admitted_proof = {
+        "maximum_baryon_plus_cdm": .208, "minimum_h_squared": .25,
+        "conservative_fixed_extra_density_upper_bound": .001,
+        "remaining_margin_lower_bound": .041,
+        "claim": "Lambda indicator redundant on this box; exact runtime closure check retained"}
+    if normalization is not None:
+        if (type(normalization) not in (int, float) or normalization != 1
+                or identity["sha256"] != "b486e38f59e9561b6ee9ed1e32a3db85a2505fcdc77d2f1e214dfcf5670f16df"
+                or proof != admitted_proof):
+            raise ValueError("normalization1 requires the exact admitted redundant-cut v2 support proof")
+    elif proof is not None:
+        raise ValueError("support proof without earned normalization declaration")
+
     bbn = contract["bbn_table"]
     if (set(bbn) != {"path", "bytes", "sha256"} or Path(bbn["path"]).is_absolute()
             or ".." in Path(bbn["path"]).parts
