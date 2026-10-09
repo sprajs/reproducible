@@ -290,7 +290,7 @@ def run_independence_chain(evaluator, configuration, attempt):
             row={name:float(x) for name,x in zip(names,state.coords[0])}
             row.update({name:float(x) for name,x in blob.items()})
             row.update(transition=raw_count,weight=1,logtarget=float(state.log_prob[0]))
-            states.write(json.dumps(row,allow_nan=False)+'\n');states.flush();os.fsync(states.fileno())
+            states.write(json.dumps(row,sort_keys=True,allow_nan=False)+'\n');states.flush();os.fsync(states.fileno())
             checkpoint('production')
         checkpoint('completed')
         return {'status':'completed','raw_transitions':raw_count,'evaluator_calls':evaluator.count,
