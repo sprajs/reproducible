@@ -107,6 +107,26 @@ class PrimaryReferenceTest(unittest.TestCase):
             self.assertEqual(result["resource_limit"], "logs_bytes")
             self.assertEqual((attempt / "worker.stdout.log").read_bytes(), b"x"*1024)
 
+    def test_atomic_checkpoint_disappearance_does_not_kill_worker(self):
+        original_stat = Path.stat
+        observed = []
+        def raced_stat(path, *args, **kwargs):
+            if path.name == "state.pending":
+                observed.append(path)
+                if len(observed) == 2:
+                    raise FileNotFoundError("atomic checkpoint renamed between discovery and stat")
+            return original_stat(path, *args, **kwargs)
+        with tempfile.TemporaryDirectory() as root:
+            attempt = Path(root) / "attempt"
+            script = "from pathlib import Path; import time; p=Path('" + str(attempt) + "')/'state.pending'; p.write_text('{}'); time.sleep(.5); p.rename(p.with_suffix('.json'))"
+            with mock.patch.object(Path, "stat", raced_stat):
+                result = controller.supervise([sys.executable, "-c", script], attempt,
+                                              {"attempt_wall_seconds": 5, "evaluation_wall_seconds": 5})
+            self.assertGreaterEqual(len(observed), 2)
+            self.assertEqual(result["status"], "completed")
+            self.assertIsNone(result["supervisor_error"])
+            self.assertTrue((attempt / "state.json").exists())
+
     def test_input_bound_refuses_before_json_parse(self):
         with tempfile.TemporaryDirectory() as root:
             path = Path(root) / "input.json"

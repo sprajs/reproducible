@@ -402,7 +402,7 @@ def supervise(command, attempt, limits):
     attempt = Path(attempt)
     attempt.mkdir(parents=True, exist_ok=False)
     started = time.monotonic()
-    failure = None
+    failure, supervisor_error = None, None
     with (attempt / "worker.stdout.log").open("xb") as stdout, (attempt / "worker.stderr.log").open("xb") as stderr:
         file_limit = limits.get("file_bytes", 134217728)
         log_limit = limits.get("logs_bytes", 16777216)
@@ -419,8 +419,16 @@ def supervise(command, attempt, limits):
                 elapsed = time.monotonic() - started
                 if elapsed > limits["attempt_wall_seconds"]:
                     failure = "attempt_wall_seconds"
-                files = [p for p in attempt.rglob("*") if p.is_file()]
-                sizes = {p: p.stat().st_size for p in files}
+                sizes = {}
+                for path in attempt.rglob("*"):
+                    try:
+                        if path.is_file():
+                            sizes[path] = path.stat().st_size
+                    except FileNotFoundError:
+                        # A checkpoint temporary is atomically renamed between
+                        # discovery and stat. Account for its replacement on
+                        # the next aggregate poll; per-file RLIMIT stays hard.
+                        continue
                 used = sum(sizes.values())
                 logs = sum(size for path, size in sizes.items() if path.suffix == ".log")
                 if used > attempt_limit - 4096:
@@ -462,6 +470,7 @@ def supervise(command, attempt, limits):
                     used += len(raw)
         except BaseException as exc:
             failure = refusal_status(exc)
+            supervisor_error = {"kind": type(exc).__name__, "message": str(exc)[:4096]}
             if child.poll() is None:
                 os.killpg(child.pid, signal.SIGKILL)
         finally:
@@ -485,7 +494,7 @@ def supervise(command, attempt, limits):
                 status = worker_status
             terminal = {"schema": "planck-primary-supervisor-terminal/v1", "status": status,
                         "worker_returncode": code, "resource_limit": failure,
-                        "worker_status": worker_status,
+                        "worker_status": worker_status, "supervisor_error": supervisor_error,
                         "elapsed_seconds": time.monotonic()-started,
                         "worker_attempt_record_exists": (attempt / "attempt.json").exists(),
                         "inference_qualified": False}
