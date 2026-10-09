@@ -50,7 +50,8 @@ before data-dependent work, without rebuilding engines or running experiments:
    select a dataset. Pin its authoritative manifest URI, SHA256, VersionId and
    restore route in the attempt. Restore only the selected inputs to a fresh
    ignored directory and verify every byte. A mutable discovery pointer is never
-   a scientific input pin. Local paths remain working copies.
+   a scientific input pin. Local paths remain temporary scratch/cache; S3 is the
+   persistent bulk-data store.
 6. If access or the catalog is unavailable, retain the failed startup receipt
    and report that specific blocker before starting work that needs the data.
    An unpublished catalog can be bypassed only with an already recorded exact
@@ -59,7 +60,15 @@ before data-dependent work, without rebuilding engines or running experiments:
 7. After meaningful successful or failed work, push the deliberately selected
    attempt to its named collection, retaining the returned manifest pins after
    remote byte checks. Read-only startup does not make automatic uploads happen.
-   Catalog curation is separate from uploading an attempt.
+   Catalog curation is separate from uploading an attempt. Use `list --collection`
+   for completed uploads not yet in the catalog. Before ending or handing off
+   useful work, publish full failed/partial evidence and unique unfinished state
+   too. For work owned by any repo, the cloud identity can write
+   `reproducible/handoffs/<owner-repository>/<name>` without extra permissions.
+   Preserve actual ownership/source/role in provenance; this does not promote
+   the handoff to a scientific result. Record exact pins in Git or an S3 handoff; local paths cannot be the only
+   cross-run record. If publication is blocked, retain bytes and report the
+   unpreserved state. Evict scratch only after fresh byte checks.
 
 ## Publishing the reusable setup
 

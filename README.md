@@ -23,13 +23,16 @@ script. A Prospector-origin experiment also retains the small candidate JSON.
 The account explains the claim, simplifications, checks, findings and limitations;
 Git records its changes. We do not publish a file for every rerun.
 
-Inputs live in ignored `data/`. Full engine receipts, tables, chains, simulations
-and rendered figures live in ignored `results/` or `simulations/`. The public
+S3 holds persistent inputs, full engine receipts, tables, chains, simulations
+and rendered figures. Ignored `data/`, `results/` and `simulations/` are temporary
+scratch/cache restored by exact manifest pins. The public
 packet identifies the evidence; a published scientific result should cite a
 separate durable archive containing its exact inputs and full run records.
 
-Use [shared cloud storage](docs/cloud-storage.md) to save verified input and run
-snapshots to the private London S3 bucket and restore them on another machine.
+Use [named shared storage](docs/shared-data.md) for useful inputs, complete or
+failed attempts and unfinished handoffs. Publish and pin before ending work;
+`push --evict-local` removes unchanged scratch only after S3 byte verification.
+Historical snapshots retain their original recovery route.
 
 ## Run the example
 
@@ -58,7 +61,8 @@ chosen flat ΛCDM parameters at eight redshifts. It uses no observed data and fi
 nothing. The runner verifies the packet, input identities and clean engine source
 revision, then calls the current `irred run` interface. It records the actual
 build, executable, request and receipts. Each destination must be new; failed
-attempts remain local and visible.
+attempts remain visible and must be published to their named S3 collection
+before a cross-run handoff.
 
 This first runner handles one compiled request per packet. Irreducible's proposed
 multi-step recipe runner remains proposed. More involved experiments can add a

@@ -2,8 +2,11 @@
 
 [Named shared data](shared-data.md) supplies persistent collections and an exact-version
 catalog; [shared S3 storage](cloud-storage.md) retains historical snapshots across
-machines. Local ignored directories are working stores; upload complete attempts
-and retain their manifest identity before treating a result as preserved.
+machines. Local ignored directories are temporary scratch/cache. S3 holds all useful
+persistent data and full successful/failed/partial evidence; publish and retain
+exact manifest pins before ending or handing off work. See the named guide for
+checksum-gated local eviction. The [2026-10-09 cleanup account](local-cleanup-2026-10-09.md)
+records removal totals, exact audit pins and retained exceptions.
 
 Git stores experiment descriptions, configuration, orchestration/visualization
 source and small provenance manifests. `data/`, `downloads/`, `results/`, `runs/`,
@@ -16,7 +19,8 @@ previously committed files. Never use `git add -f` for those stores.
 New input declarations name immutable source versions/URLs, bytes, SHA-256,
 scientific role, units/axes, calibration, selection and dependence. Acquiring
 bytes is not scientific validation. Third-party terms remain applicable even
-when downloads are public; original source data are preserved during cleanup.
+when downloads are public; exact original source data are preserved in verified
+S3 custody during cleanup.
 
 ## Retained historical inputs
 
@@ -48,10 +52,18 @@ The approximately 22 MiB frozen input archive has been moved to ignored
 index and full wider download manifest are also preserved locally under
 `data/legacy/`, with their historical Git copies available at the
 [previous commit](https://github.com/sprajs/reproducible/tree/1f11997e8935a515cb5f7bb5312c91a38b6c1558/provenance).
-No original archive was deleted during this reset. Local ignored storage still
-needs a separate backup if relied upon.
+No original archive was deleted during that reset. These historical archives now
+have verified S3 preservation and restoration
+routes in the [preservation account](preservation-2026-10-08.md). Local copies
+may be evicted after fresh remote verification; they are not persistent stores.
 
-In a fresh clone, recover the frozen input archive from that historical snapshot:
+In a fresh clone, run storage discovery and resolve
+`three-project-preservation-2026-10-08` first. Its pinned S3 archive contains the
+original legacy archives and exact recovery paths. Use the canonical restorer in
+the preservation account, then select the required legacy inputs below.
+
+The older Git command is retained as an explicit historical reconstruction
+route, not an automatic fallback or current persistent data store:
 
 ```sh
 git fetch origin 1f11997e8935a515cb5f7bb5312c91a38b6c1558
