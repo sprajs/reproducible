@@ -81,7 +81,7 @@ def bounded_bytes(path, limit=CONFIG_BYTES):
     return raw
 
 
-def read_json(path):
+def decode_json(raw):
     def pairs(items):
         value = {}
         for key, item in items:
@@ -89,8 +89,18 @@ def read_json(path):
                 raise ValueError("duplicate JSON key")
             value[key] = item
         return value
-    return json.loads(bounded_bytes(path), object_pairs_hook=pairs,
+    return json.loads(raw, object_pairs_hook=pairs,
                       parse_constant=lambda _x: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+
+
+def read_json(path):
+    return decode_json(bounded_bytes(path))
+
+
+def json_identity(path):
+    raw = bounded_bytes(path)
+    return decode_json(raw), {"path":str(Path(path).absolute()), "bytes":len(raw),
+                              "sha256":hashlib.sha256(raw).hexdigest()}
 
 
 adapter = load("primary_reference_adapter", Path(__file__).with_name("adapter.py"))
@@ -294,7 +304,7 @@ class Evaluator:
 def execute(args):
     started = time.monotonic()
     contract = validate_contract(read_json(args.contract))
-    configuration = read_json(args.points) if args.mode == "pilot" else None
+    configuration, configuration_pin = json_identity(args.points) if args.mode == "pilot" else (None, None)
     if configuration is not None:
         contract = pilot_admission(contract, configuration)
     limits = contract["limits"]
@@ -380,13 +390,12 @@ def execute(args):
             evaluator = Evaluator(contract, adapter.ClassOwner(classy, contract), primary, journal, deadline,
                                   artifact_root=attempt)
             if args.mode == "points":
-                values = read_json(args.points)
+                values, record["points_identity"] = json_identity(args.points)
                 if type(values) is not list or len(values) > limits["max_evaluations"]:
                     raise ValueError("ordered point-count resource bound")
-                record["points_identity"] = identity(args.points)
                 record["scores"] = [evaluator.score(p["values"], precision=p.get("policy")) for p in values]
             elif args.mode == "pilot":
-                record["points_identity"] = identity(args.points)
+                record["points_identity"] = configuration_pin
                 record["pilot_configuration"] = configuration
                 record["interpretation"] = "discarded provisional ref1 proposal pilot; no posterior or precision-recipe admission"
                 inference = load("primary_provisional_inference", Path(__file__).with_name("inference.py"))
