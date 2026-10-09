@@ -8,6 +8,7 @@ import math
 import os
 from pathlib import Path
 import resource
+import re
 import signal
 import subprocess
 import sys
@@ -21,6 +22,34 @@ ROOT = Path(__file__).resolve().parents[2]
 THREAD_ENV = {name: "1" for name in
               ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS")}
 os.environ.update(THREAD_ENV)
+
+
+class ResourceInterrupted(RuntimeError):
+    pass
+
+
+def interrupted(_signal, _frame):
+    raise ResourceInterrupted("predeclared evaluation wall limit reached")
+
+
+def refusal_status(exc):
+    if isinstance(exc, adapter.LikelihoodUnsupported):
+        return "likelihood_unsupported"
+    if isinstance(exc, adapter.NumericalRefusal):
+        return "numerical_refused"
+    if isinstance(exc, ResourceInterrupted):
+        return "resource_interrupted"
+    if isinstance(exc, KeyboardInterrupt):
+        return "user_interrupted"
+    return "software_refused"
+
+
+def terminal_status(code, failure):
+    if failure in ("attempt_wall_seconds", "evaluation_wall_seconds", "attempt_bytes") or code == -signal.SIGALRM:
+        return "resource_interrupted"
+    if failure is not None:
+        return failure
+    return "completed" if code == 0 else "worker_refused"
 
 
 def load(name, path):
@@ -74,6 +103,29 @@ def validate_contract(contract):
         raise ValueError("exact released primary target required")
     if contract.get("physical_indicator") != "CLASS_Omega_Lambda_nonnegative":
         raise ValueError("explicit source-owned nonnegative-Lambda physical support required")
+    identity = contract["candidate_identity"]
+    if (set(identity) != {"repository", "revision", "path", "snapshot", "bytes", "sha256"}
+            or identity["repository"] != "sprajs/prospector"
+            or re.fullmatch(r"[0-9a-f]{40}", identity["revision"]) is None
+            or identity["snapshot"] != "candidate.json"
+            or re.fullmatch(r"[0-9a-f]{64}", identity["sha256"]) is None):
+        raise ValueError("exact immutable Prospector candidate identity required")
+    snapshot = Path(__file__).parent / identity["snapshot"]
+    raw = snapshot.read_bytes()
+    if len(raw) != identity["bytes"] or hashlib.sha256(raw).hexdigest() != identity["sha256"]:
+        raise ValueError("candidate snapshot exact bytes differ")
+    candidate = json.loads(raw)
+    source_contract = candidate["minimal_test"]["parameter_choices"]["consumer_contract"]
+    if any(contract.get(key) != value for key, value in source_contract.items()):
+        raise ValueError("consumer physical/prior semantics differ from source candidate")
+    bbn = contract["bbn_table"]
+    if (set(bbn) != {"path", "bytes", "sha256"} or Path(bbn["path"]).is_absolute()
+            or ".." in Path(bbn["path"]).parts
+            or contract["class_fixed"]["sBBN file"] != bbn["path"]):
+        raise ValueError("source-relative exact BBN table pin required")
+    for name in ("max_evaluations", "evaluation_wall_seconds", "attempt_wall_seconds", "address_bytes"):
+        if type(contract["limits"][name]) is not int or contract["limits"][name] <= 0:
+            raise ValueError("positive integer resource policy required")
     return contract
 
 
@@ -101,7 +153,8 @@ class Evaluator:
         if self.count >= self.contract["limits"]["max_evaluations"] or time.monotonic() >= self.deadline:
             raise RuntimeError("predeclared attempt work/deadline bound reached")
         self.count += 1
-        row = {"evaluation": self.count, "point": p, "policy": precision or self.contract["production_policy"]}
+        row = {"evaluation": self.count, "point": p, "policy": precision or self.contract["production_policy"],
+               "started_monotonic": time.monotonic()}
         if not adapter.physical_support(values, self.contract):
             self.event({**row, "status": "physical_prior_excluded"})
             return {"status": "physical_prior_excluded", "logtarget": None}
@@ -129,8 +182,7 @@ class Evaluator:
             self.event(row)
             return row
         except BaseException as exc:
-            self.event({**row, "status": "likelihood_unsupported" if isinstance(exc, adapter.LikelihoodUnsupported)
-                        else "numerical_refused", "error": str(exc)[:4096],
+            self.event({**row, "status": refusal_status(exc), "error": str(exc)[:4096],
                         "native_record": getattr(exc, "record", None)})
             raise
         finally:
@@ -149,7 +201,10 @@ def execute(args):
     attempt = Path(args.attempt).absolute()
     if not attempt.is_relative_to(ROOT / "results") or any(p.is_symlink() for p in attempt.parents):
         raise ValueError("fresh nonsymlink ignored results path required")
-    attempt.mkdir(parents=True, exist_ok=False)
+    if not args.worker:
+        attempt.mkdir(parents=True, exist_ok=False)
+    elif not attempt.is_dir():
+        raise ValueError("supervisor-created fresh attempt required")
     record = {"schema": "planck-primary-reference-attempt/v1", "status": "failed",
               "started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "mode": args.mode, "contract": contract, "thread_environment": THREAD_ENV,
@@ -163,8 +218,10 @@ def execute(args):
             raise ValueError("clean committed experiment source required")
         record["source_revision"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         record["source_files"] = [identity(p) for p in
-                                  [Path(__file__), Path(adapter.__file__), ROOT / "experiments/lcdm-reference/likelihood.py",
-                                   ROOT / "experiments/lcdm-reference/official_clik.py", ROOT / "experiments/lcdm-reference/score.py"]]
+                                  [*sorted(Path(__file__).parent.iterdir()),
+                                   ROOT / "experiments/lcdm-reference/likelihood.py",
+                                   ROOT / "experiments/lcdm-reference/official_clik.py",
+                                   ROOT / "experiments/lcdm-reference/score.py"] if p.is_file()]
         runtime = json.loads(Path(args.runtime).read_bytes())
         compiled = json.loads(Path(args.classy_runtime).read_bytes())
         record["runtime"] = identity(args.runtime)
@@ -175,11 +232,17 @@ def execute(args):
         pins = file_pins([runtime, compiled])
         for pin in pins:
             score.checked_file(pin, deadline)
+        if Path(compiled["python"]["path"]) != Path("/proc/self/exe").resolve():
+            raise ValueError("executing Python differs from new extension build identity")
         manifest = json.loads(Path(compiled["source_manifest"]["path"]).read_bytes())
         for pin in manifest["source_files"]:
             absolute = {**pin, "path": str(Path(compiled["source_root"]) / pin["path"])}
             score.checked_file(absolute, deadline)
             pins.append(absolute)
+        bbn = {**contract["bbn_table"], "path": str(Path(compiled["source_root"]) / contract["bbn_table"]["path"])}
+        score.checked_file(bbn, deadline)
+        contract = {**contract, "_resolved_bbn_path": bbn["path"]}
+        record["resolved_bbn_table"] = bbn
         planck = runtime["planck"]
         roots = [Path(planck["plc_root"]) / relative for _, relative in score.PRODUCTS]
         products = [p for p in planck["admission_files"] if any(root in Path(p["path"]).parents for root in roots)]
@@ -193,6 +256,7 @@ def execute(args):
         likelihood = load("varied_primary_transport", ROOT / "experiments/lcdm-reference/likelihood.py")
         primary = score.initialization(lambda: adapter.PrimaryOwner(likelihood, planck["plc_root"]),
                                        attempt, None, clik, deadline)
+        signal.signal(signal.SIGALRM, interrupted)
         checks = score.selfchecks((attempt / "initialization.stdout.log").read_bytes(),
                                   planck["plc_root"], score.SELFCHECK_CRITERION)
         record["selfchecks"] = checks
@@ -210,9 +274,12 @@ def execute(args):
         record["cleanup"] = clik.close_all()
         for pin in pins:
             score.checked_file(pin, deadline)
+        for pin in record["source_files"]:
+            score.checked_file(pin, deadline)
         score.product_tree(planck["plc_root"], products, deadline)
         record.update(status="completed", evaluations=evaluator.count)
     except BaseException as exc:
+        record["status"] = refusal_status(exc)
         record["error"] = {"kind": type(exc).__name__, "message": str(exc)[:4096],
                            "native_record": getattr(exc, "record", None)}
         raise
@@ -222,9 +289,78 @@ def execute(args):
     return record
 
 
+def supervise(command, attempt, limits):
+    """One persistent numerical child, with an external native-call watchdog.
+
+    A Python signal cannot reliably interrupt an in-flight Cython/C call. The
+    parent monitors fsynced started events and kills/reaps the child's process
+    group on either deadline; its terminal record survives a native hang.
+    """
+    attempt = Path(attempt)
+    attempt.mkdir(parents=True, exist_ok=False)
+    started = time.monotonic()
+    failure = None
+    with (attempt / "worker.stdout.log").open("xb") as stdout, (attempt / "worker.stderr.log").open("xb") as stderr:
+        child = subprocess.Popen(command, stdout=stdout, stderr=stderr, start_new_session=True)
+        try:
+            while child.poll() is None:
+                elapsed = time.monotonic() - started
+                if elapsed > limits["attempt_wall_seconds"]:
+                    failure = "attempt_wall_seconds"
+                journal = attempt / "evaluations.jsonl"
+                if journal.exists():
+                    with journal.open("rb") as stream:
+                        stream.seek(max(0, journal.stat().st_size - 65536))
+                        lines = stream.read(65536).splitlines()
+                    if lines:
+                        try:
+                            last = json.loads(lines[-1])
+                        except (ValueError, UnicodeError):
+                            last = None  # Partial final line is not an earned event.
+                        if (last is not None and last.get("status") == "started"
+                                and time.monotonic()-last["started_monotonic"] > limits["evaluation_wall_seconds"]):
+                            failure = "evaluation_wall_seconds"
+                if failure is not None:
+                    os.killpg(child.pid, signal.SIGKILL)
+                    break
+                try:
+                    child.wait(timeout=0.2)
+                except subprocess.TimeoutExpired:
+                    pass
+        except BaseException as exc:
+            failure = refusal_status(exc)
+            if child.poll() is None:
+                os.killpg(child.pid, signal.SIGKILL)
+        finally:
+            code = child.wait()
+            status = terminal_status(code, failure)
+            terminal = {"schema": "planck-primary-supervisor-terminal/v1", "status": status,
+                        "worker_returncode": code, "resource_limit": failure,
+                        "elapsed_seconds": time.monotonic()-started,
+                        "worker_attempt_record_exists": (attempt / "attempt.json").exists(),
+                        "inference_qualified": False}
+            with (attempt / "terminal.json").open("x") as stream:
+                json.dump(terminal, stream, indent=2, sort_keys=True, allow_nan=False)
+                stream.write("\n")
+    return terminal
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("contract", "runtime", "classy-runtime", "attempt", "points"):
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--mode", choices=("points",), default="points")
-    execute(parser.parse_args())
+    parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
+    args = parser.parse_args()
+    if args.worker:
+        execute(args)
+    else:
+        contract = validate_contract(json.loads(Path(args.contract).read_bytes()))
+        attempt = Path(args.attempt).absolute()
+        if not attempt.is_relative_to(ROOT / "results") or any(p.is_symlink() for p in attempt.parents):
+            raise ValueError("fresh nonsymlink ignored results path required")
+        result = supervise([sys.executable, str(Path(__file__).absolute()), *sys.argv[1:], "--worker"],
+                           attempt, contract["limits"])
+        print(json.dumps(result, sort_keys=True))
+        if result["status"] != "completed":
+            sys.exit(1)

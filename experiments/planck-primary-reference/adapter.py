@@ -47,6 +47,8 @@ def class_parameters(values, contract, *, precision=None):
         raise ValueError("varied cosmological coordinate supplied as fixed")
     fixed.update({name: p[name] for name in ("omega_b", "omega_cdm", "H0", "n_s", "tau_reio")})
     fixed["A_s"] = math.exp(p["logA"]) * 1e-10
+    if "_resolved_bbn_path" in contract:
+        fixed["sBBN file"] = contract["_resolved_bbn_path"]
     settings = contract["numerical_policies"][precision or contract["production_policy"]]
     if set(settings) & set(fixed):
         raise ValueError("numerical policy overwrites physical parameter")

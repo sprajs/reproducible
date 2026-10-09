@@ -4,14 +4,62 @@ import math
 from pathlib import Path
 import types
 import unittest
+import io
+import json
+import sys
+import tempfile
+from unittest import mock
 
 PATH = Path(__file__).resolve().parents[1] / "experiments/planck-primary-reference/adapter.py"
 SPEC = importlib.util.spec_from_file_location("primary_reference_adapter", PATH)
 adapter = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(adapter)
+CONTROLLER_SPEC = importlib.util.spec_from_file_location("primary_reference_controller", PATH.with_name("controller.py"))
+controller = importlib.util.module_from_spec(CONTROLLER_SPEC)
+with mock.patch.dict(sys.modules, {"adapter": adapter}):
+    CONTROLLER_SPEC.loader.exec_module(controller)
 
 
 class PrimaryReferenceTest(unittest.TestCase):
+    def test_numerical_failure_never_becomes_negative_infinity(self):
+        contract = {"bounds": {name: [0, 100] for name in adapter.COORDINATES},
+                    "calibration_prior": {"mean": 1, "sigma": .0025},
+                    "production_policy": "base", "limits": {"max_evaluations": 10, "evaluation_wall_seconds": 10}}
+        class RefusingTheory:
+            def evaluate(self, *_args, **_kwargs):
+                raise adapter.NumericalRefusal("native refusal", {"phase": "CLASS"})
+        journal = io.StringIO()
+        journal.fileno = lambda: 123
+        with mock.patch.dict(sys.modules, {"scipy.stats": types.SimpleNamespace(
+                truncnorm=lambda *_args, **_kwargs: None, uniform=lambda **_kwargs: None)}), \
+                mock.patch.object(controller.os, "fsync"):
+            evaluator = controller.Evaluator(contract, RefusingTheory(), None, journal,
+                                             controller.time.monotonic()+10)
+            with self.assertRaises(adapter.NumericalRefusal):
+                evaluator.logtarget([.022, .12, 67, 3, .96, .05, 1])
+        events = [json.loads(line) for line in journal.getvalue().splitlines()]
+        self.assertEqual([row["status"] for row in events], ["started", "numerical_refused"])
+        self.assertNotIn("logtarget", events[-1])
+
+    def test_exception_statuses_remain_distinct(self):
+        for exc, status in [(KeyboardInterrupt(), "user_interrupted"),
+                            (controller.ResourceInterrupted(), "resource_interrupted"),
+                            (ValueError(), "software_refused"),
+                            (adapter.LikelihoodUnsupported("x", {}), "likelihood_unsupported")]:
+            self.assertEqual(controller.refusal_status(exc), status)
+
+    def test_native_hung_child_is_killed_reaped_and_recorded(self):
+        # A native pause never returns to Python to deliver a Python handler.
+        script = "import ctypes; ctypes.CDLL(None).pause()"
+        with tempfile.TemporaryDirectory() as root:
+            attempt = Path(root) / "attempt"
+            result = controller.supervise([sys.executable, "-c", script], attempt,
+                                          {"attempt_wall_seconds": .3, "evaluation_wall_seconds": .2})
+            self.assertEqual(result["status"], "resource_interrupted")
+            self.assertLess(result["worker_returncode"], 0)
+            saved = json.loads((attempt / "terminal.json").read_bytes())
+            self.assertEqual(saved, result)
+
     def test_calibration_guard_precedes_table_index(self):
         support = {"unit": 1, "stepEE_native_float32": 0.0001, "nstepsEE": 3000}
         # This point is within the uncalibrated table but exceeds it after
