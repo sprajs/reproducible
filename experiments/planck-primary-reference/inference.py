@@ -1,4 +1,4 @@
-"""Experiment-specific orchestration of external Cobaya kernels and ArviZ diagnostics.
+"""Experiment-specific orchestration of external emcee/SciPy kernels and ArviZ diagnostics.
 
 No proposal, acceptance rule, physics or likelihood kernel is implemented here.
 Four chain configurations and a frozen proposal are admitted before production.
@@ -8,7 +8,6 @@ import json
 import math
 import os
 from pathlib import Path
-import pickle
 import time
 
 NAMES = ('omega_b', 'omega_cdm', 'H0', 'logA', 'n_s', 'tau_reio', 'A_planck')
@@ -46,7 +45,7 @@ def kernel_inventory():
     pins = []
     for path in sorted(paths):
         before = path.stat()
-        if before.st_size > 134217728:
+        if before.st_size > 536870912:
             raise ValueError('external statistical dependency file bound')
         raw = path.read_bytes()
         after = path.stat()
@@ -61,167 +60,6 @@ def verify_kernel_inventory(pins):
         path = Path(pin['path'])
         if path.stat().st_size != pin['bytes'] or hashlib.sha256(path.read_bytes()).hexdigest() != pin['sha256']:
             raise ValueError('admitted external statistical source changed')
-
-
-def run_chain(evaluator, configuration, attempt):
-    import numpy as np
-    from cobaya.model import get_model
-    from cobaya.sampler import get_sampler
-    from cobaya.log import logger_setup
-    logger_setup(debug=False)
-    names = list(NAMES)
-    # Internal Cobaya priors are normalized uniform boxes. Replace its A uniform
-    # with the source's normalized truncated Gaussian exactly once in the external
-    # likelihood. The six cosmological uniform factors remain internal only.
-    width_a = np.diff(evaluator.contract['bounds']['A_planck'])[0]
-    def primary(**parameters):
-        values = [parameters[name] for name in names]
-        row = evaluator.score(values)
-        if row['status'] == 'physical_prior_excluded':
-            return -math.inf, {}
-        loglike = row['likelihood']['loglike'] + row['prior_terms']['A_planck'] + math.log(width_a)
-        derived = {name: row['derived'][original] for name, original in DERIVED.items()}
-        derived['logtarget'] = row['logtarget']
-        return loglike, derived
-
-    seed, start = configuration['seed'], configuration['start']
-    executing_source_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
-    target_hash = hashlib.sha256(json.dumps({key:value for key,value in evaluator.contract.items()
-        if not key.startswith('_')},sort_keys=True,separators=(',',':')).encode()).hexdigest()
-    restored = None
-    if configuration.get('resume_state'):
-        pin = configuration['resume_state']
-        source = Path(pin['path'])
-        if source.is_symlink() or source.stat().st_size > 1048576:
-            raise ValueError('bounded previously owned checkpoint required')
-        raw = source.read_bytes()
-        if len(raw) != pin['bytes'] or hashlib.sha256(raw).hexdigest() != pin['sha256']:
-            raise ValueError('checkpoint byte identity differs')
-        # Only a trusted, previously produced scientific state admitted by exact
-        # byte receipt is unpickled; never arbitrary uploaded/provider bytes.
-        restored = pickle.loads(raw)
-        if (restored['schema'] != 'cobaya-fixed-chain-exact-state/v1'
-                or restored['target_contract_sha256'] != target_hash
-                or restored['executing_source_sha256'] != executing_source_sha256
-                or restored.get('runtime_identity') != configuration.get('runtime_identity')
-                or any(restored['configuration'].get(key) != configuration.get(key) for key in
-                       ('seed','start','proposal_covariance','fast_oversampling','proposal_scale'))
-                or configuration['raw_steps'] < restored['completed_transitions']):
-            raise ValueError('checkpoint target/seed/frozenproposal differs')
-        start = restored['current_point'].values.tolist()
-    covariance = np.asarray(configuration['proposal_covariance'], dtype=float)
-    if (covariance.shape != (7, 7) or not np.all(np.isfinite(covariance))
-            or not np.allclose(covariance, covariance.T, rtol=0, atol=1e-14)):
-        raise ValueError('finite symmetric frozen seven-coordinate proposal required')
-    np.linalg.cholesky(covariance)
-    if not isinstance(seed, int) or not 0 <= seed < 2**32:
-        raise ValueError('explicit independent seed required')
-    if len(start) != 7 or not all(evaluator.contract['bounds'][name][0] <= x <=
-                                 evaluator.contract['bounds'][name][1] for name,x in zip(names,start)):
-        raise ValueError('explicit separated starting state inside support required')
-    params = {name: {'prior': {'min': evaluator.contract['bounds'][name][0],
-                              'max': evaluator.contract['bounds'][name][1]},
-                     'ref': value, 'proposal': float(math.sqrt(covariance[i,i]))}
-              for i,(name,value) in enumerate(zip(names,start))}
-    params.update({name: {'derived': True} for name in [*DERIVED, 'logtarget']})
-    info = {'params': params, 'likelihood': {'official_primary': {
-        'external': primary, 'input_params': names, 'stop_at_error': True,
-        'output_params': [*DERIVED, 'logtarget']}}}
-    options = {'seed': seed, 'covmat': covariance.tolist(), 'covmat_params': names,
-               'learn_proposal': False, 'measure_speeds': False, 'drag': False,
-               'blocking': [[1,names[:6]],[configuration['fast_oversampling'],names[6:]]],
-               'burn_in': 0, 'oversample_thin': False, 'max_samples': configuration['raw_steps'] + 1,
-               'Rminus1_stop': 0., 'Rminus1_cl_stop': 0., 'max_tries': 1000000,
-               'output_every': 60, 'proposal_scale': configuration['proposal_scale']}
-    model = get_model(info)
-    sampler = get_sampler({'mcmc': options}, model)
-    kernel_pins = kernel_inventory()
-    atomic_bytes(attempt / 'statistical-kernel-inventory.json',
-                 (json.dumps(kernel_pins,sort_keys=True)+'\n').encode())
-    if restored is not None:
-        verify_kernel_inventory(restored['statistical_kernel_pins'])
-        if restored['versions'] != {'cobaya': __import__('cobaya').__version__, 'numpy': np.__version__}:
-            raise ValueError('checkpoint mature-kernel version differs')
-        sampler._rng, sampler.proposer = restored['generator'], restored['proposer']
-        sampler.current_point = restored['current_point']
-        sampler.burn_in_left, sampler.i_learn = restored['burn_in_left'], restored['i_learn']
-    # Cobaya's own checkpoint omits generator/proposer state. Save both together,
-    # retaining their shared Generator references, random directions and cycles.
-    # Every completed transition has a durable statistical-state checkpoint;
-    # every proposed vector (including prior rejection) has a journal record.
-    proposal_journal = (attempt / 'proposals.jsonl').open('x')
-    state_journal = (attempt / 'states.jsonl').open('x')
-    raw_count = 0 if restored is None else restored['completed_transitions']
-    original_proposal = sampler.proposer.get_proposal
-    def audited_proposal(vector):
-        original_proposal(vector)
-        record = {'transition': raw_count + 1, 'proposal': vector.tolist(),
-                  'inside_box': all(evaluator.contract['bounds'][name][0] <= x <=
-                                    evaluator.contract['bounds'][name][1] for name,x in zip(names,vector))}
-        proposal_journal.write(json.dumps(record, allow_nan=False) + '\n')
-        proposal_journal.flush()
-        os.fsync(proposal_journal.fileno())
-    # Preserve the mature proposer object rather than pickling an instrumentation
-    # closure. Restore its original method only for serialization, then reinstate.
-    sampler.proposer.get_proposal = audited_proposal
-    def checkpoint(phase):
-        sampler.collection.out_update()
-        sampler.proposer.get_proposal = original_proposal
-        try:
-            state = {'schema': 'cobaya-fixed-chain-exact-state/v1', 'phase': phase,
-                     'configuration': configuration, 'target_contract_sha256': target_hash,
-                     'executing_source_sha256': executing_source_sha256,
-                     'runtime_identity': configuration.get('runtime_identity'),
-                     'statistical_kernel_pins': kernel_pins,
-                     'completed_transitions': raw_count,
-                     'generator': sampler._rng, 'proposer': sampler.proposer,
-                     'current_point': sampler.current_point,
-                     'burn_in_left': sampler.burn_in_left,
-                     'i_learn': sampler.i_learn, 'evaluator_count': evaluator.count,
-                     'collection_rows': len(sampler.collection),
-                     'versions': {'cobaya': __import__('cobaya').__version__,
-                                  'numpy': np.__version__}}
-            pin = atomic_bytes(attempt / 'statistical-state.pickle', pickle.dumps(state, protocol=5))
-        finally:
-            sampler.proposer.get_proposal = audited_proposal
-        atomic_bytes(attempt / 'statistical-state.json', (json.dumps({**pin,
-            'completed_transitions': raw_count, 'phase': phase, 'seed': seed,
-            'current_point': sampler.current_point.values.tolist(),
-            'current_weight': sampler.current_point.weight}, sort_keys=True) + '\n').encode())
-    checkpoint('initialized')
-    try:
-        # Calls the installed mature transition kernel without duplicating its
-        # statistical logic. Fixed raw transition count includes all rejections.
-        while raw_count < configuration['raw_steps']:
-            if configuration.get('global_stop_path') and Path(configuration['global_stop_path']).exists():
-                raise RuntimeError('another chain failed inside admitted target; global stop')
-            accepted = sampler.get_new_sample()
-            raw_count += 1
-            current = {name: float(x) for name,x in zip(names,sampler.current_point.values)}
-            current.update({name: float(x) for name,x in zip(model.parameterization.derived_params(),
-                                                          sampler.current_point.results.derived)})
-            current.update(transition=raw_count, accepted=bool(accepted), weight=1,
-                           logtarget=float(sampler.current_point.logpost))
-            state_journal.write(json.dumps(current, allow_nan=False) + '\n')
-            state_journal.flush()
-            os.fsync(state_journal.fileno())
-            checkpoint('production')
-        checkpoint('completed')
-        return {'status': 'completed', 'raw_transitions': raw_count,
-                'accepted_collection_rows': len(sampler.collection), 'evaluator_calls': evaluator.count,
-                'resumed_previous_transitions': 0 if restored is None else restored['completed_transitions'],
-                'seed': seed, 'start': start, 'proposal_covariance': covariance.tolist(),
-                'production_adaptation': False, 'inference_qualified': False}
-    except BaseException:
-        if configuration.get('global_stop_path'):
-            atomic_bytes(Path(configuration['global_stop_path']), b'chain refused; inspect full owned prefix\n')
-        raise
-    finally:
-        proposal_journal.close()
-        state_journal.close()
-        sampler.proposer.get_proposal = original_proposal
-        model.close()
-        verify_kernel_inventory(kernel_pins)
 
 
 def diagnose(chain_rows, contract, configuration):
@@ -370,7 +208,7 @@ def run_independence_chain(evaluator, configuration, attempt):
         raw = source.read_bytes()
         if len(raw) != pin['bytes'] or hashlib.sha256(raw).hexdigest() != pin['sha256']:
             raise ValueError('checkpoint identity differs')
-        restored = pickle.loads(raw)  # exact admitted owned state only
+        restored = json.loads(raw)
         if (restored['schema'] != 'emcee-singleton-mh-exact-state/v1'
                 or restored['target_contract_sha256'] != target_hash
                 or restored['executing_source_sha256'] != code_hash
@@ -378,6 +216,9 @@ def run_independence_chain(evaluator, configuration, attempt):
                 or configuration['raw_steps'] < restored['completed_transitions']):
             raise ValueError('checkpoint source/target/frozenkernel differs')
         verify_kernel_inventory(restored['statistical_kernel_pins'])
+        versions={'emcee':emcee.__version__,'numpy':np.__version__,'scipy':__import__('scipy').__version__}
+        if restored['versions'] != versions:
+            raise ValueError('active mature statistical kernel versions differ')
         raw_count = restored['completed_transitions']
     proposals = (attempt/'proposals.jsonl').open('x')
     states = (attempt/'states.jsonl').open('x')
@@ -404,22 +245,36 @@ def run_independence_chain(evaluator, configuration, attempt):
     if weight < 1:moves.append((emcee.moves.MHMove(calibration,ndim=7),1-weight))
     sampler=emcee.EnsembleSampler(1,7,target,moves=moves,blobs_dtype=object)
     sampler.random_state=np.random.RandomState(seed).get_state()
-    state=np.asarray(configuration['start'],dtype=float).reshape(1,7) if restored is None else restored['state']
+    state=np.asarray(configuration['start'],dtype=float).reshape(1,7)
+    if restored is not None:
+        saved=restored['state'];rng=saved['random_state']
+        if (rng[0]!='MT19937' or len(rng[1])!=624 or any(type(x) is not int or not 0<=x<2**32 for x in rng[1])
+                or not 0<=rng[2]<=624 or rng[3] not in [0,1] or not math.isfinite(rng[4])):
+            raise ValueError('exact bounded mature MT19937 state required')
+        rng=(rng[0],np.array(rng[1],dtype=np.uint32),int(rng[2]),int(rng[3]),float(rng[4]))
+        state=emcee.State(np.array(saved['coords'],dtype=float),log_prob=np.array(saved['log_prob'],dtype=float),
+                          blobs=np.array(saved['blobs'],dtype=object),random_state=rng)
     if restored is None:
         logp,blobs=sampler.compute_log_prob(state)
         if not np.all(np.isfinite(logp)):raise ValueError('finite explicit separated starting point required')
         state=emcee.State(state,log_prob=logp,blobs=blobs,random_state=sampler.random_state)
     kernel_pins=kernel_inventory()
+    if restored is not None and kernel_pins != restored['statistical_kernel_pins']:
+        raise ValueError('currently loaded statistical executable closure differs from checkpoint')
     atomic_bytes(attempt/'statistical-kernel-inventory.json',(json.dumps(kernel_pins,sort_keys=True)+'\n').encode())
     def checkpoint(phase):
         value={'schema':'emcee-singleton-mh-exact-state/v1','phase':phase,
                'configuration':configuration,'target_contract_sha256':target_hash,
                'executing_source_sha256':code_hash,'completed_transitions':raw_count,
-               'state':state,'statistical_kernel_pins':kernel_pins,
-               'versions':{'emcee':emcee.__version__,'numpy':np.__version__},
+               'state':{'coords':state.coords.tolist(),'log_prob':state.log_prob.tolist(),
+                        'blobs':state.blobs.tolist(),'random_state':[state.random_state[0],
+                            state.random_state[1].tolist(),state.random_state[2],
+                            state.random_state[3],state.random_state[4]]},
+               'statistical_kernel_pins':kernel_pins,
+               'versions':{'emcee':emcee.__version__,'numpy':np.__version__,'scipy':__import__('scipy').__version__},
                'evaluator_count':evaluator.count}
-        pin=atomic_bytes(attempt/'statistical-state.pickle',pickle.dumps(value,protocol=5))
-        atomic_bytes(attempt/'statistical-state.json',(json.dumps({**pin,'completed_transitions':raw_count,
+        pin=atomic_bytes(attempt/'statistical-state.json',(json.dumps(value,sort_keys=True,allow_nan=False)+'\n').encode())
+        atomic_bytes(attempt/'statistical-state-receipt.json',(json.dumps({**pin,'completed_transitions':raw_count,
             'phase':phase,'seed':seed,'current_point':state.coords[0].tolist()},sort_keys=True)+'\n').encode())
     checkpoint('initialized')
     try:
