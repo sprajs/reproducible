@@ -18,6 +18,7 @@ CONTROLLER_SPEC = importlib.util.spec_from_file_location("primary_reference_cont
 controller = importlib.util.module_from_spec(CONTROLLER_SPEC)
 with mock.patch.dict(sys.modules, {"adapter": adapter}):
     CONTROLLER_SPEC.loader.exec_module(controller)
+adapter = controller.adapter
 
 
 class PrimaryReferenceTest(unittest.TestCase):
@@ -77,6 +78,25 @@ class PrimaryReferenceTest(unittest.TestCase):
             self.assertLess(result["worker_returncode"], 0)
             saved = json.loads((attempt / "terminal.json").read_bytes())
             self.assertEqual(saved, result)
+
+    def test_stdout_overflow_stops_with_exact_bounded_prefix(self):
+        script = "import os; os.write(1,b'x'*65536); import ctypes; ctypes.CDLL(None).pause()"
+        with tempfile.TemporaryDirectory() as root:
+            attempt = Path(root) / "attempt"
+            result = controller.supervise([sys.executable, "-c", script], attempt,
+                                          {"attempt_wall_seconds": 5, "evaluation_wall_seconds": 5,
+                                           "logs_bytes": 1024, "attempt_bytes": 1048576,
+                                           "file_bytes": 131072})
+            self.assertEqual(result["status"], "resource_interrupted")
+            self.assertEqual(result["resource_limit"], "logs_bytes")
+            self.assertEqual((attempt / "worker.stdout.log").read_bytes(), b"x"*1024)
+
+    def test_input_bound_refuses_before_json_parse(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "input.json"
+            path.write_bytes(b"{}" + b" "*controller.CONFIG_BYTES)
+            with self.assertRaisesRegex(ValueError, "byte bound"):
+                controller.read_json(path)
 
     def test_calibration_guard_precedes_table_index(self):
         support = {"unit": 1, "stepEE_native_float32": 0.0001, "nstepsEE": 3000}

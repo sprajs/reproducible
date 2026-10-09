@@ -9,15 +9,16 @@ import os
 from pathlib import Path
 import resource
 import re
+import selectors
+import stat
 import signal
 import subprocess
 import struct
 import sys
 import time
 
-import adapter
-
 ROOT = Path(__file__).resolve().parents[2]
+CONFIG_BYTES = 2097152
 # Frozen CLASS parallel.h honours OMP_NUM_THREADS for its pthread TaskSystem.
 # Set before importing any compiled solver or BLAS-dependent inference package.
 THREAD_ENV = {name: "1" for name in
@@ -46,7 +47,8 @@ def refusal_status(exc):
 
 
 def terminal_status(code, failure):
-    if failure in ("attempt_wall_seconds", "evaluation_wall_seconds", "attempt_bytes") or code == -signal.SIGALRM:
+    if failure in ("attempt_wall_seconds", "evaluation_wall_seconds", "attempt_bytes", "logs_bytes", "file_bytes") \
+            or code in (-signal.SIGALRM, -signal.SIGXFSZ):
         return "resource_interrupted"
     if failure is not None:
         return failure
@@ -54,11 +56,44 @@ def terminal_status(code, failure):
 
 
 def load(name, path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    module = importlib.util.module_from_spec(spec)
+    import types
+    raw = bounded_bytes(path, 262144)
+    module = types.ModuleType(name)
+    module.__file__, module.__package__ = str(path), ""
     sys.modules[name] = module
-    spec.loader.exec_module(module)
+    exec(compile(raw, str(path), "exec"), module.__dict__)
     return module
+
+
+def bounded_bytes(path, limit=CONFIG_BYTES):
+    path = Path(path).absolute()
+    if any(p.is_symlink() for p in path.parents):
+        raise ValueError("input symlink ancestor")
+    with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb") as stream:
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or before.st_size > limit:
+            raise ValueError("input regular-file byte bound")
+        raw = stream.read(limit + 1)
+        after = os.fstat(stream.fileno())
+    facts = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns, s.st_ctime_ns)
+    if len(raw) > limit or facts(before) != facts(after) or facts(after) != facts(path.lstat()):
+        raise ValueError("input byte/stat identity changed")
+    return raw
+
+
+def read_json(path):
+    def pairs(items):
+        value = {}
+        for key, item in items:
+            if key in value:
+                raise ValueError("duplicate JSON key")
+            value[key] = item
+        return value
+    return json.loads(bounded_bytes(path), object_pairs_hook=pairs,
+                      parse_constant=lambda _x: (_ for _ in ()).throw(ValueError("nonfinite JSON")))
+
+
+adapter = load("primary_reference_adapter", Path(__file__).with_name("adapter.py"))
 
 
 def file_pins(document):
@@ -112,7 +147,7 @@ def validate_contract(contract):
             or re.fullmatch(r"[0-9a-f]{64}", identity["sha256"]) is None):
         raise ValueError("exact immutable Prospector candidate identity required")
     snapshot = Path(__file__).parent / identity["snapshot"]
-    raw = snapshot.read_bytes()
+    raw = bounded_bytes(snapshot)
     if len(raw) != identity["bytes"] or hashlib.sha256(raw).hexdigest() != identity["sha256"]:
         raise ValueError("candidate snapshot exact bytes differ")
     candidate = json.loads(raw)
@@ -124,7 +159,8 @@ def validate_contract(contract):
             or ".." in Path(bbn["path"]).parts
             or contract["class_fixed"]["sBBN file"] != bbn["path"]):
         raise ValueError("source-relative exact BBN table pin required")
-    for name in ("max_evaluations", "evaluation_wall_seconds", "attempt_wall_seconds", "address_bytes"):
+    for name in ("max_evaluations", "evaluation_wall_seconds", "attempt_wall_seconds", "address_bytes",
+                 "attempt_bytes", "file_bytes", "logs_bytes"):
         if type(contract["limits"][name]) is not int or contract["limits"][name] <= 0:
             raise ValueError("positive integer resource policy required")
     return contract
@@ -218,7 +254,7 @@ class Evaluator:
 
 def execute(args):
     started = time.monotonic()
-    contract = validate_contract(json.loads(Path(args.contract).read_bytes()))
+    contract = validate_contract(read_json(args.contract))
     limits = contract["limits"]
     deadline = started + limits["attempt_wall_seconds"]
     attempt = Path(args.attempt).absolute()
@@ -232,21 +268,31 @@ def execute(args):
               "started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "mode": args.mode, "contract": contract, "thread_environment": THREAD_ENV,
               "physical_conditioning_normalization": None, "inference_qualified": False}
+    score, pins, post_error = None, [], None
     def identity(path):
-        raw = Path(path).read_bytes()
+        raw = bounded_bytes(path)
         return {"path": str(Path(path).absolute()), "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()}
     try:
         dirty = subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True)
         if dirty:
             raise ValueError("clean committed experiment source required")
         record["source_revision"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        packet_files = [p for p in sorted(Path(__file__).parent.iterdir()) if p.is_file()]
+        if len(packet_files) > 8 or any(p.is_symlink() for p in packet_files):
+            raise ValueError("eight regular source files per packet runtime bound")
+        tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
+        source_bytes = sum((ROOT / name).stat().st_size for name in tracked if name)
+        if source_bytes > 2621440:
+            raise ValueError("complete public source tree 2.5MiB bound")
+        record["source_budget"] = {"public_bytes": source_bytes, "maximum_public_bytes": 2621440,
+                                   "packet_files": len(packet_files), "maximum_packet_files": 8}
         record["source_files"] = [identity(p) for p in
-                                  [*sorted(Path(__file__).parent.iterdir()),
+                                  [*packet_files,
                                    ROOT / "experiments/lcdm-reference/likelihood.py",
                                    ROOT / "experiments/lcdm-reference/official_clik.py",
                                    ROOT / "experiments/lcdm-reference/score.py"] if p.is_file()]
-        runtime = json.loads(Path(args.runtime).read_bytes())
-        compiled = json.loads(Path(args.classy_runtime).read_bytes())
+        runtime = read_json(args.runtime)
+        compiled = read_json(args.classy_runtime)
         record["runtime"] = identity(args.runtime)
         record["classy_runtime"] = identity(args.classy_runtime)
         if runtime["schema"] != "observational-cosmology-runtime/v1" or compiled["status"] != "completed":
@@ -257,7 +303,7 @@ def execute(args):
             score.checked_file(pin, deadline)
         if Path(compiled["python"]["path"]) != Path("/proc/self/exe").resolve():
             raise ValueError("executing Python differs from new extension build identity")
-        manifest = json.loads(Path(compiled["source_manifest"]["path"]).read_bytes())
+        manifest = read_json(compiled["source_manifest"]["path"])
         for pin in manifest["source_files"]:
             absolute = {**pin, "path": str(Path(compiled["source_root"]) / pin["path"])}
             score.checked_file(absolute, deadline)
@@ -291,17 +337,14 @@ def execute(args):
             evaluator = Evaluator(contract, adapter.ClassOwner(classy, contract), primary, journal, deadline,
                                   artifact_root=attempt)
             if args.mode == "points":
-                values = json.loads(Path(args.points).read_bytes())
+                values = read_json(args.points)
+                if type(values) is not list or len(values) > limits["max_evaluations"]:
+                    raise ValueError("ordered point-count resource bound")
                 record["points_identity"] = identity(args.points)
                 record["scores"] = [evaluator.score(p["values"], precision=p.get("policy")) for p in values]
             else:
                 raise ValueError("inference execution requires separately reviewed numerical qualification")
         record["cleanup"] = clik.close_all()
-        for pin in pins:
-            score.checked_file(pin, deadline)
-        for pin in record["source_files"]:
-            score.checked_file(pin, deadline)
-        score.product_tree(planck["plc_root"], products, deadline)
         record.update(status="completed", evaluations=evaluator.count)
     except BaseException as exc:
         record["status"] = refusal_status(exc)
@@ -309,8 +352,27 @@ def execute(args):
                            "native_record": getattr(exc, "record", None)}
         raise
     finally:
+        if score is not None:
+            try:
+                after = [*pins, *record.get("source_files", [])]
+                after += [record[key] for key in ("runtime", "classy_runtime", "points_identity") if key in record]
+                for pin in after:
+                    score.checked_file(pin, deadline)
+                if "planck" in locals() and "products" in locals():
+                    score.product_tree(planck["plc_root"], products, deadline)
+                record["after_admission"] = {"status": "passed", "verified_pins": len(after)}
+            except BaseException as verification:
+                post_error = verification
+                record["after_admission"] = {"status": "refused", "kind": type(verification).__name__,
+                    "error": str(verification)[:4096],
+                    "observed_identity": getattr(verification, "observed_identity", None),
+                    "expected_identity": getattr(verification, "expected_identity", None)}
+                if record["status"] == "completed":
+                    record["status"] = "software_refused"
         record["elapsed_seconds"] = time.monotonic()-started
         (attempt / "attempt.json").write_text(json.dumps(record, sort_keys=True, indent=2, allow_nan=False)+"\n")
+    if post_error is not None:
+        raise post_error
     return record
 
 
@@ -326,12 +388,31 @@ def supervise(command, attempt, limits):
     started = time.monotonic()
     failure = None
     with (attempt / "worker.stdout.log").open("xb") as stdout, (attempt / "worker.stderr.log").open("xb") as stderr:
-        child = subprocess.Popen(command, stdout=stdout, stderr=stderr, start_new_session=True)
+        file_limit = limits.get("file_bytes", 134217728)
+        log_limit = limits.get("logs_bytes", 16777216)
+        attempt_limit = limits.get("attempt_bytes", 2147483648)
+        def child_limits():
+            resource.setrlimit(resource.RLIMIT_FSIZE, (file_limit, file_limit))
+        child = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                 start_new_session=True, preexec_fn=child_limits)
+        selector = selectors.DefaultSelector()
+        selector.register(child.stdout, selectors.EVENT_READ, stdout)
+        selector.register(child.stderr, selectors.EVENT_READ, stderr)
         try:
-            while child.poll() is None:
+            while child.poll() is None or selector.get_map():
                 elapsed = time.monotonic() - started
                 if elapsed > limits["attempt_wall_seconds"]:
                     failure = "attempt_wall_seconds"
+                files = [p for p in attempt.rglob("*") if p.is_file()]
+                sizes = {p: p.stat().st_size for p in files}
+                used = sum(sizes.values())
+                logs = sum(size for path, size in sizes.items() if path.suffix == ".log")
+                if used > attempt_limit - 4096:
+                    failure = "attempt_bytes"
+                if any(size > file_limit for size in sizes.values()):
+                    failure = "file_bytes"
+                if logs >= log_limit:
+                    failure = "logs_bytes"
                 journal = attempt / "evaluations.jsonl"
                 if journal.exists():
                     with journal.open("rb") as stream:
@@ -346,24 +427,40 @@ def supervise(command, attempt, limits):
                                 and time.monotonic()-last["started_monotonic"] > limits["evaluation_wall_seconds"]):
                             failure = "evaluation_wall_seconds"
                 if failure is not None:
-                    os.killpg(child.pid, signal.SIGKILL)
+                    if child.poll() is None:
+                        os.killpg(child.pid, signal.SIGKILL)
                     break
-                try:
-                    child.wait(timeout=0.2)
-                except subprocess.TimeoutExpired:
-                    pass
+                for key, _events in selector.select(timeout=0.1):
+                    remaining = min(log_limit-logs, attempt_limit-used-4096,
+                                    file_limit-key.data.tell())
+                    if remaining <= 0:
+                        failure = "logs_bytes" if logs >= log_limit else "attempt_bytes" if used >= attempt_limit-4096 else "file_bytes"
+                        break
+                    raw = key.fileobj.read1(min(65536, remaining))
+                    if not raw:
+                        selector.unregister(key.fileobj)
+                        continue
+                    key.data.write(raw)
+                    key.data.flush()
+                    logs += len(raw)
+                    used += len(raw)
         except BaseException as exc:
             failure = refusal_status(exc)
             if child.poll() is None:
                 os.killpg(child.pid, signal.SIGKILL)
         finally:
+            if failure is not None and child.poll() is None:
+                os.killpg(child.pid, signal.SIGKILL)
             code = child.wait()
+            selector.close()
+            child.stdout.close()
+            child.stderr.close()
             status = terminal_status(code, failure)
             worker_status = None
             worker_record = attempt / "attempt.json"
             if worker_record.exists() and worker_record.stat().st_size <= 2097152:
                 try:
-                    worker_status = json.loads(worker_record.read_bytes()).get("status")
+                    worker_status = read_json(worker_record).get("status")
                 except (ValueError, UnicodeError):
                     pass
             if status == "worker_refused" and worker_status in {
@@ -392,7 +489,7 @@ if __name__ == "__main__":
     if args.worker:
         execute(args)
     else:
-        contract = validate_contract(json.loads(Path(args.contract).read_bytes()))
+        contract = validate_contract(read_json(args.contract))
         attempt = Path(args.attempt).absolute()
         if not attempt.is_relative_to(ROOT / "results") or any(p.is_symlink() for p in attempt.parents):
             raise ValueError("fresh nonsymlink ignored results path required")
