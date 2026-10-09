@@ -26,5 +26,5 @@
     "Generic single-request runner cannot execute this dedicated multi-model native SDK controller.",
     "Observational model/data/likelihood/calibration contracts are intentionally absent."
   ],
-  "request_sha256": "d4148b61f60e1bdf7b558bedeb8c8683128b3de16f56d238b70d5ae19ea9145f"
+  "request_sha256": "0b8a7e12de910c8da1b57ca637d0b5e7d0794271b1dad3053ce39a92de5715fa"
 }

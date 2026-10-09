@@ -273,8 +273,8 @@
       "mass_enclosed_kg": "kg",
       "potential_m2_s2": "m^2/s^2",
       "radial_acceleration_m_s2": "m/s^2 signed outward",
-      "tidal_radial_s2": "s^-2",
-      "tidal_tangential_s2": "s^-2"
+      "potential_radial_curvature_s2": "s^-2",
+      "potential_tangential_curvature_s2": "s^-2"
     },
     "nfw": {
       "Delta_Sigma_Msun_Mpc2": "Msun/Mpc^2",

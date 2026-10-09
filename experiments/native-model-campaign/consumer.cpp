@@ -281,8 +281,8 @@ int main(int argc, char **argv) {
                        r.inward_radial_acceleration_m_s2);
           scalar_field("circular_speed_squared_m2_s2",
                        r.circular_speed_squared_m2_s2);
-          scalar_field("tidal_radial_s2", r.potential_radial_curvature_s2);
-          scalar_field("tidal_tangential_s2",
+          scalar_field("potential_radial_curvature_s2", r.potential_radial_curvature_s2);
+          scalar_field("potential_tangential_curvature_s2",
                        r.potential_tangential_curvature_s2);
           endrow();
         }
