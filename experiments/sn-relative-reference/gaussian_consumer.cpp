@@ -16,9 +16,13 @@
 #ifndef SN_SDK_BUILD_ID
 #error "Pinned native SDK build identity is required"
 #endif
+#ifndef SN_EVALUATION_CAP
+#define SN_EVALUATION_CAP 192
+#endif
+static_assert(SN_EVALUATION_CAP >= 192 && SN_EVALUATION_CAP <= 200000);
 namespace {
 using irred::statistics::DensityStatus; using irred::statistics::MatrixKind;
-constexpr std::size_t N=1590, max_evaluations=192;
+constexpr std::size_t N=1590, max_evaluations=SN_EVALUATION_CAP;
 constexpr double forward_budget=1e-8;
 const std::string table_sha="1cb0fc379ef066afdc2ffd1857681cc478024570d8a3eba284fb645775198cf8";
 const std::string covariance_sha="5edd58efb7a29825a29246a29c90e3d95ddcabe9cf7cdb063b271824f221c66e";

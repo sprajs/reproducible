@@ -223,9 +223,9 @@ def diagnose(paths, warmup, uniform_control=False):
         for name, samples, truth in moments:
             estimate = float(samples.mean())
             error = float(az.mcse(az.from_dict(posterior={'moment': samples}), method='mean').moment.values)
-            z = abs(estimate-truth)/error if error > 0 else math.inf
+            z = float(abs(estimate-truth)/error) if error > 0 else math.inf
             tests.append({'name': name, 'estimate': estimate, 'truth': float(truth),
-                'autocorrelation_mcse': error, 'absolute_error_over_mcse': z, 'passed': math.isfinite(z) and z <= 5.0})
+                'autocorrelation_mcse': error, 'absolute_error_over_mcse': z, 'passed': bool(math.isfinite(z) and z <= 5.0)})
         result['known_physical_uniform_moments'] = tests
         result['transform_control_qualified'] = limits_pass and all(x['passed'] for x in tests)
     return result
