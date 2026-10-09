@@ -63,7 +63,10 @@ inherits the historical manuscript's scientific checks.
 For a published result, place the complete run store, exact inputs or lawful
 acquisition routes, environment and plotting source in a durable research archive.
 Record that archive's permanent identifier in the Markdown. The ignored local
-store is convenient execution evidence; it is not a preservation service.
+store is temporary execution scratch. Before ending or handing off useful work,
+publish full successful/failed/partial evidence and unique unfinished state to
+the named S3 collection, then record the exact manifest pins. Keep bytes locally
+if upload or copying permission is blocked; report the unpreserved dependency.
 
 ## Notebook choice
 

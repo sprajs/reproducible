@@ -70,7 +70,16 @@ def main():
     with tempfile.TemporaryDirectory() as td:
         marker=Path(td)/'manifest.json';fetch(a.manifest_uri,a.manifest_version_id,marker,a.manifest_sha256,None,profile)
         doc=json.loads(marker.read_text())
-        if doc['schema']!='research-private-preservation-transport/v1':raise ValueError('unknown manifest format')
+        if doc['schema']=='research-named-manifest/v1':
+            # Supplemental inputs use the shared named transport. Reuse its
+            # pinned path/collection validation; payload restoration is unchanged.
+            from research_storage import Storage, manifest_rows
+            storage=Storage(profile, a.ambient_credentials)
+            doc=manifest_rows(storage,{'uri':a.manifest_uri,'sha256':a.manifest_sha256,'version_id':a.manifest_version_id},marker)
+            classification_sha=doc['provenance']['classification_manifest_sha256']
+        elif doc['schema']=='research-private-preservation-transport/v1':
+            classification_sha=doc['classification_manifest_sha256']
+        else:raise ValueError('unknown manifest format')
         rows=doc['files'];names=[str(safe(r['path'])) for r in rows]
         if len(set(names))!=len(names) or 'manifest.json' not in names:raise ValueError('invalid file listing')
         a.destination.mkdir(parents=True,exist_ok=False)
@@ -79,7 +88,7 @@ def main():
             fetch(r['uri'],r['version_id'],dest,r['sha256'],r['bytes'],profile)
         shutil.copyfile(marker,a.destination/'transport-manifest.json')
     m=json.loads((a.destination/'manifest.json').read_text())
-    if digest(a.destination/'manifest.json')!=doc['classification_manifest_sha256']:raise ValueError('classification identity differs')
+    if digest(a.destination/'manifest.json')!=classification_sha:raise ValueError('classification identity differs')
     if a.recover_roots:recover(a.destination,m)
     print(json.dumps({'verified_files':len(rows),'destination':str(a.destination),'recovered_originals':a.recover_roots,'git_and_redownload_routes':'manifest.json and audit/manifest-entries.jsonl.gz'}))
 

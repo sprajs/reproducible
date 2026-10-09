@@ -54,10 +54,23 @@ full receipts. Failed and null findings deserve concise entries too.
 are ignored local storage. Keep plots and notebook sources with their experiment;
 write generated figures and executed notebooks locally. Do not force-add
 ignored output, third-party archives or downloaded papers. License/publication
-permission must be checked before redistributing inputs. Preserve original
-inputs; only remove inventoried disposable outputs within authorized scope.
+permission must be checked before redistributing inputs. Preserve exact original
+inputs and receipts in verified S3 custody; remove only inventoried local copies
+with verified recovery routes or disposable products within authorized scope.
 
 ## Shared cloud storage
+
+S3 is the persistent bulk-data store; ignored local directories are temporary
+scratch/cache. Before a handoff or end of useful work, publish eligible inputs,
+full completed/failed/partial evidence and unique unfinished state, and retain
+exact manifest URI/SHA256/VersionId/format in Git or an S3 handoff. Discover and
+restore verified S3 bytes before using old local paths. Use `list --collection`
+for completed uploads not yet curated into the catalog. Git keeps source and
+concise findings. A failed upload or copying restriction is an explicit
+unpreserved blocker: retain the local bytes. Remove local copies only after
+fresh remote byte checks (`push --evict-local` or pinned `evict --apply`); never
+remove unpreserved material or historical remote versions.
+
 
 At the start of data-dependent work, follow [storage discovery](docs/cloud-startup.md).
 Run `scripts/storage_startup.py` (with `--ambient-credentials` in cloud) and retain
