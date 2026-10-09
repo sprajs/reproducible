@@ -1,0 +1,90 @@
+{
+  "schema": "foundation-data-custody-pins/v1",
+  "checked_utc": "2026-10-09T19:09:10.753785+00:00",
+  "scope": {
+    "assets": 90,
+    "families": 11,
+    "statuses": {
+      "acquired_exact_upstream": 79,
+      "blocked": 3,
+      "failed_changed_upstream": 1,
+      "verified_exact_git_source_projection": 1,
+      "restored_exact_s3_archive_member": 6
+    },
+    "publication_statuses": {
+      "published_exact_and_fresh_restored": 73,
+      "refused_transport_screening": 2,
+      "unavailable_original_bytes": 4,
+      "excluded_source_reading_only_rights": 10,
+      "existing_exact_s3_archive_recovery": 1
+    },
+    "originals_available": 86,
+    "eligible_original_payloads_newly_published": 73,
+    "no_local_removal": true,
+    "scope": "finite catalogue coverage; scientific admission by separate family contract"
+  },
+  "catalog_pin": {
+    "bytes": 198929,
+    "sha256": "7ee8a1ce4443bf87b58af95e895ab14b02976d2567186ccd4133b384ce528fcb",
+    "uri": "s3://research-data-436908790672-eu-west-2/shared/catalogs/releases/7ee8a1ce4443bf87b58af95e895ab14b02976d2567186ccd4133b384ce528fcb.json",
+    "version_id": "5zhtxcsv0MqKPSUGnkvHAXTcIQ307K2T"
+  },
+  "manifests": {
+    "baseline": {
+      "manifest_format": "research-named-manifest/v1",
+      "collection": "reproducible/handoffs/reproducible/foundation-planck-primary-desi-original-inputs-20261009",
+      "uri": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-planck-primary-desi-original-inputs-20261009/versions/ffc90bd6f8bdd2e5bb85ca021a39b665a7fa83bfd28091962520f4b83172fad2/manifest.json",
+      "version_id": "7Wx6k4nnXxL8qsgMuycTXK2qexElF8Tz",
+      "sha256": "b3cb5a810216a036df5fa761ccf551646d392442d6070805cdac2bf264f5e7d0",
+      "bytes": 46932
+    },
+    "broader": {
+      "manifest_format": "research-named-manifest/v1",
+      "collection": "reproducible/handoffs/reproducible/foundation-finite90-original-dataset-custody-20261009",
+      "uri": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-finite90-original-dataset-custody-20261009/versions/e8f07a0377c5b65ed14d02f539dd0beb6fdbd4156c927774c261f4243510d9b6/manifest.json",
+      "version_id": "IRroC9SKerzuM30CtJfwSKRByrn0aORl",
+      "sha256": "1dc14173240d1b50d6143206bd665dc73565883b98fca91488fd34457536c820",
+      "bytes": 115759
+    },
+    "primary_runtime_attempts_001_010": {
+      "manifest_format": "research-named-manifest/v1",
+      "collection": "reproducible/handoffs/reproducible/foundation-primary-runtime-attempts-001-010-20261009",
+      "uri": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-primary-runtime-attempts-001-010-20261009/versions/f3775ed2ed48b79225e279c3c0de99a547beae7ef8562059743345a62460efd7/manifest.json",
+      "version_id": "7LcdorQZoL7aXqlyG2lkeSz9IIOjitLV",
+      "sha256": "98410eea985b853355d0278ea9ea7611f95998be0ac6ab2035aad359b9a33bd6",
+      "bytes": 160601
+    },
+    "current90_audit": {
+      "manifest_format": "research-named-manifest/v1",
+      "collection": "reproducible/handoffs/reproducible/foundation-finite90-current-custody-audit-20261009",
+      "uri": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-finite90-current-custody-audit-20261009/versions/92a13c9b33f5f9a1fb2905542bceb27f49331f72211599a463d9d8d8722e2b7a/manifest.json",
+      "version_id": "n9WOfHGDofI9zDAIW4c9NGCrveB4YnuS",
+      "sha256": "ffe3827a98d4445ad08162a28d0f2e14da8744a747c7e687662ea3643553d9e8",
+      "bytes": 13140
+    }
+  },
+  "current90_ledger_object_pin": {
+    "bytes": 1107755,
+    "path": "strict-current-custody.json",
+    "sha256": "b6023777d3f650776ab5c2ee0b2c430ff9054d85c1b493b46bcf786f5c4a1605",
+    "uri": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/foundation-finite90-current-custody-audit-20261009/versions/92a13c9b33f5f9a1fb2905542bceb27f49331f72211599a463d9d8d8722e2b7a/files/strict-current-custody.json",
+    "version_id": "pO.ypJgc998J1Dq61s5JScM.BoYBXrF_"
+  },
+  "source_owner_readiness": {
+    "manifest_format": "research-named-manifest/v1",
+    "uri": "s3://research-data-436908790672-eu-west-2/reproducible/handoffs/prospector/foundation-source-owner-20261009/versions/7947d7d98388ab5d2ce8d4a3dd4d166654d11fed303d9e5b126b357836568993/manifest.json",
+    "sha256": "1fee8138c47381e6046a4d73daaf0cdc3d74fcff01ace0778b7de6089033c992",
+    "version_id": "b.rWdztBdDvyKcS_58j8k8mHjGJj0EZw",
+    "bytes": 3783,
+    "reported_fresh_verified_files": 5,
+    "source_commit": "9307a58",
+    "scientific_admission": "source notes, not new qualification"
+  },
+  "fresh_restore_verified_files": {
+    "baseline": 32,
+    "broader": 91,
+    "primary_runtime_attempts_001_010": 113,
+    "current90_audit": 16
+  },
+  "restore_format": "All four completion manifests use research-named-manifest/v1 via scripts/research_storage.py pull; current90 ledger object is JSON within its exact audit completion manifest. Historical original source documents additionally use archive/member routes recorded per asset."
+}
