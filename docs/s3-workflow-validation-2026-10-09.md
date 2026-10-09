@@ -241,9 +241,9 @@ separate selected evidence bundle (47 objects, exact readback, manifest last):
 - VersionId: `j9.re66X3FCuTtdoyEiAyftnRA0lBWl0`
 
 Independent empty-directory pulls of the numerical and direct-reference named
-manifests also completed:128 and47 selected files respectively. Comparison of
-original staging inventories with all three fresh retrieved bundles verified227
-files with zero SHA256 mismatches. This includes failed001 source/protocol,
+manifests also completed: 128 and 47 selected files respectively. Comparison of
+original staging inventories with all three fresh retrieved bundles verified 227
+files with zero SHA256 mismatches. This includes failed attempt 001 source/protocol,
 original qualification, appended correction, broader optimizer results and the
 direct command's refused prefix. Scientific run records were not rewritten.
 Worker model/launch evidence and shared job allocations accompany the bundles;
