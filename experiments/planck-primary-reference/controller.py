@@ -11,6 +11,7 @@ import resource
 import re
 import signal
 import subprocess
+import struct
 import sys
 import time
 
@@ -131,9 +132,10 @@ def validate_contract(contract):
 
 class Evaluator:
     """Sole physical support owner; native failures abort the caller."""
-    def __init__(self, contract, theory, primary, journal, deadline):
+    def __init__(self, contract, theory, primary, journal, deadline, artifact_root=None):
         self.contract, self.theory, self.primary = contract, theory, primary
         self.journal, self.deadline, self.count = journal, deadline, 0
+        self.artifact_root, self.last_artifact = artifact_root, None
         from scipy.stats import truncnorm, uniform
         cp = contract["calibration_prior"]
         lo, hi = contract["bounds"]["A_planck"]
@@ -168,6 +170,26 @@ class Evaluator:
                 row["logtarget"] = None
                 self.event(row)
                 return row
+            key = tuple(values[:6]), row["policy"]
+            if self.last_artifact is not None and self.last_artifact[0] == key:
+                artifact = self.last_artifact[1]
+            else:
+                path = self.artifact_root / (f"theory-{self.count:08d}.binary64")
+                order = ["TT", "EE", "BB", "TE"]
+                raw = b"".join(struct.pack("<d", value) for name in order for value in theory["spectra"][name])
+                with path.open("xb") as stream:
+                    stream.write(raw)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                artifact = {"path": str(path.absolute()), "bytes": len(raw),
+                            "sha256": hashlib.sha256(raw).hexdigest(),
+                            "encoding": "IEEE754-binary64-little-endian", "unit": "Cl_microkelvin_squared",
+                            "spectra_order": order, "ell": [0, self.contract["lmax"]]}
+                self.last_artifact = key, artifact
+            row.update(derived=theory["derived"], input_parameters=theory["input_parameters"],
+                       theory_seconds=theory["seconds"], theory_cache_reused=theory["cache_reused"],
+                       theory_artifact=artifact)
+            self.event({**row, "status": "theory_completed"})
             likelihood = self.primary.evaluate(theory["spectra"], p["A_planck"])
             prior_terms = {name: float(owner.logpdf(value)) for name, owner, value in
                            zip(adapter.COORDINATES[:-1], self.uniforms, values[:-1])}
@@ -266,7 +288,8 @@ def execute(args):
             raise ValueError("official initialization selfchecks refused")
         resource.setrlimit(resource.RLIMIT_AS, (limits["address_bytes"], limits["address_bytes"]))
         with (attempt / "evaluations.jsonl").open("x") as journal:
-            evaluator = Evaluator(contract, adapter.ClassOwner(classy, contract), primary, journal, deadline)
+            evaluator = Evaluator(contract, adapter.ClassOwner(classy, contract), primary, journal, deadline,
+                                  artifact_root=attempt)
             if args.mode == "points":
                 values = json.loads(Path(args.points).read_bytes())
                 record["points_identity"] = identity(args.points)
@@ -319,7 +342,7 @@ def supervise(command, attempt, limits):
                             last = json.loads(lines[-1])
                         except (ValueError, UnicodeError):
                             last = None  # Partial final line is not an earned event.
-                        if (last is not None and last.get("status") == "started"
+                        if (last is not None and last.get("status") in ("started", "theory_completed")
                                 and time.monotonic()-last["started_monotonic"] > limits["evaluation_wall_seconds"]):
                             failure = "evaluation_wall_seconds"
                 if failure is not None:

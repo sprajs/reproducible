@@ -156,7 +156,7 @@ class PrimaryOwner:
         self.transport = likelihood
         self.owner = likelihood.PlanckPrimary(plc_root, "plik_lite_TTTEEE")
         for name, axes in self.owner.contracts.items():
-            if tuple(axes["extra_names"]) not in ((), ("A_planck",)):
+            if tuple(axes["extra_names"]) != ("A_planck",):
                 raise ValueError("unadmitted nuisance coordinate in " + name)
 
     def evaluate(self, spectra, calibration):
@@ -183,6 +183,8 @@ class PrimaryOwner:
             return {"components": components, "loglike": math.fsum(components.values()),
                     "component_attempts": rows}
         except Exception as exc:
+            if rows and rows[-1]["status"] == "started":
+                rows[-1].update(status="refused", error=str(exc)[:4096])
             kind = LikelihoodUnsupported if isinstance(exc, LikelihoodUnsupported) else NumericalRefusal
             raise kind("official primary refused inside admitted physical support",
                                    {"phase": "PLC", "components": components, "component_attempts": rows,
