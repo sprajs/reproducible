@@ -71,7 +71,6 @@ unpreserved blocker: retain the local bytes. Remove local copies only after
 fresh remote byte checks (`push --evict-local` or pinned `evict --apply`); never
 remove unpreserved material or historical remote versions.
 
-
 At the start of data-dependent work, follow [storage discovery](docs/cloud-startup.md).
 Run `scripts/storage_startup.py` (with `--ambient-credentials` in cloud) and retain
 its catalog pin. Do not infer missing shared data from an empty local directory.

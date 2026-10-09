@@ -1,4 +1,4 @@
-# Inputs, full receipts, simulations and rendered outputs are local.
+# S3 holds persistent bulk data; these ignored paths are scratch/cache.
 /data/
 /downloads/
 /results/

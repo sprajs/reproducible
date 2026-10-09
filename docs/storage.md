@@ -18,7 +18,8 @@ previously committed files. Never use `git add -f` for those stores.
 New input declarations name immutable source versions/URLs, bytes, SHA-256,
 scientific role, units/axes, calibration, selection and dependence. Acquiring
 bytes is not scientific validation. Third-party terms remain applicable even
-when downloads are public; exact original source data are preserved in verified S3 custody during cleanup.
+when downloads are public; exact original source data are preserved in verified
+S3 custody during cleanup.
 
 ## Retained historical inputs
 
@@ -50,11 +51,18 @@ The approximately 22 MiB frozen input archive has been moved to ignored
 index and full wider download manifest are also preserved locally under
 `data/legacy/`, with their historical Git copies available at the
 [previous commit](https://github.com/sprajs/reproducible/tree/1f11997e8935a515cb5f7bb5312c91a38b6c1558/provenance).
-No original archive was deleted during this reset. These historical archives now have verified S3 preservation and restoration
+No original archive was deleted during that reset. These historical archives now
+have verified S3 preservation and restoration
 routes in the [preservation account](preservation-2026-10-08.md). Local copies
 may be evicted after fresh remote verification; they are not persistent stores.
 
-In a fresh clone, recover the frozen input archive from that historical snapshot:
+In a fresh clone, run storage discovery and resolve
+`three-project-preservation-2026-10-08` first. Its pinned S3 archive contains the
+original legacy archives and exact recovery paths. Use the canonical restorer in
+the preservation account, then select the required legacy inputs below.
+
+The older Git command is retained as an explicit historical reconstruction
+route, not an automatic fallback or current persistent data store:
 
 ```sh
 git fetch origin 1f11997e8935a515cb5f7bb5312c91a38b6c1558

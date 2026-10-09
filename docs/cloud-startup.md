@@ -50,7 +50,8 @@ before data-dependent work, without rebuilding engines or running experiments:
    select a dataset. Pin its authoritative manifest URI, SHA256, VersionId and
    restore route in the attempt. Restore only the selected inputs to a fresh
    ignored directory and verify every byte. A mutable discovery pointer is never
-   a scientific input pin. Local paths remain temporary scratch/cache; S3 is the persistent bulk-data store.
+   a scientific input pin. Local paths remain temporary scratch/cache; S3 is the
+   persistent bulk-data store.
 6. If access or the catalog is unavailable, retain the failed startup receipt
    and report that specific blocker before starting work that needs the data.
    An unpublished catalog can be bypassed only with an already recorded exact
