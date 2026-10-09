@@ -73,3 +73,25 @@ mature engine must own acceptance. Numerical refusals inside physical prior
 support stop an attempt. Four independent chains, rank diagnostics, bulk/tail
 ESS, Monte Carlo error and prior/support checks remain required; current posterior
 status is unqualified.
+
+## Separate transformed-sampling preparation
+
+[Coordinates](coordinates.py) use `h=H0/100`,
+`u=(omega_b,Omega_cb=(omega_b+omega_cdm)/h²,eta=ln h,calM=M−5log10h)`.
+The inverse retains coupled original physical-box membership; no rectangular u
+prior or clipping is introduced. Its determinant is `100 exp(3 eta)`, so the
+transformed target adds `ln100+3 eta` once. Proposal-density ratios are evaluated
+in u, separately. Fixed photons/relics prevent an exact scale-degeneracy claim.
+Deterministic roundtrip, coupled-support, normalization and independent Jacobian
+controls precede sampling. Endpoint roundoff never enlarges physical support.
+
+[Statistical orchestration](inference.py) delegates centered symmetric pilot or
+independence Student-t6 proposals/densities to SciPy and Hastings acceptance to
+installed emcee singleton MHMove. Four chains have independent explicit seeds;
+all holding states are retained. An injected unit-likelihood control checks the
+same transform against known physical uniform means, variances and cross-moments,
+with autocorrelation MCSE of each moment. Its thresholds are frozen before use.
+A separately bounded real-data pilot is discarded; production proposal geometry
+is frozen from actual pilot covariance before chain execution. Rank Rhat<1.01,
+bulk/tail ESS≥400 and mean MCSE/SD≤0.05 apply to all reported varying coordinates.
+No production posterior qualification is asserted here.
