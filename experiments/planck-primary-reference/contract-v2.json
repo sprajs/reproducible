@@ -205,6 +205,26 @@
       "transfer_neglect_delta_k_S_t1": 0.05,
       "transfer_neglect_delta_k_S_t2": 0.17
     },
+    "ref2-lensing-attribution-2240": {
+      "accurate_lensing": 1,
+      "delta_l_max": 1000,
+      "hyper_flat_approximation_nu": 7000.0,
+      "k_step_sub": 0.0125,
+      "k_step_super": 0.0005,
+      "l_linstep": 10,
+      "l_logstep": 1.03,
+      "num_mu_minus_lmax": 2240,
+      "q_linstep": 0.1125,
+      "tol_ncdm": 0.00025,
+      "tol_ncdm_bg": 2.5e-06,
+      "tol_ncdm_synchronous": 0.00025,
+      "tol_perturbations_integration": 2.5e-06,
+      "tol_thermo_integration": 2.5e-07,
+      "transfer_neglect_delta_k_S_e": 0.13,
+      "transfer_neglect_delta_k_S_t0": 0.17,
+      "transfer_neglect_delta_k_S_t1": 0.05,
+      "transfer_neglect_delta_k_S_t2": 0.17
+    },
     "reference1": {
       "accurate_lensing": 1,
       "delta_l_max": 1000,

@@ -105,7 +105,7 @@ class ClassOwner:
             result = {"status": "completed", "spectra": spectra, "derived": derived,
                       "input_parameters": dict(self.owner.pars),
                       "seconds": time.monotonic() - started, "cache_reused": False}
-            if record["policy"] in ("ref2-lensing-attribution", "ref2-lensing-attribution-1120"):
+            if record["policy"] in ("ref2-lensing-attribution", "ref2-lensing-attribution-1120", "ref2-lensing-attribution-2240"):
                 raw = self.owner.raw_cl(self.contract["lmax"])
                 diagnostic = {name.upper(): [float(x * scale) for x in raw[name]]
                               for name in ("tt", "ee", "te")}
