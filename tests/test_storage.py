@@ -30,7 +30,7 @@ class StorageTests(unittest.TestCase):
 
     def test_public_source_budget_boundary_and_excess(self):
         self.check_tree({"source.txt": check_repository.PUBLIC_SOURCE_BYTES})
-        with self.assertRaisesRegex(ValueError, "exceeds 2.25 MiB"):
+        with self.assertRaisesRegex(ValueError, "exceeds 2.5 MiB"):
             self.check_tree({"source.txt": check_repository.PUBLIC_SOURCE_BYTES + 1})
 
     def test_local_and_generated_files_remain_excluded(self):

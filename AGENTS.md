@@ -2,7 +2,10 @@
 
 Reproducible runs experiments discovered by Prospector using software built in
 Irreducible. Own the experiment design, input lineage, fitting/orchestration,
-visualization and concise account here. Shared equations, physical models,
+visualization and concise account here. [docs/roadmap.md](docs/roadmap.md) is the
+sole active local programme; [docs/gaps.md](docs/gaps.md) is factual readiness.
+Older operative campaign/checkpoint priorities are superseded without changing
+their scientific pins or findings. Shared equations, physical models,
 numerical kernels and their scientific tests belong in Irreducible. Read
 [experiment conventions](docs/experiments.md), [storage](docs/storage.md) and
 [development](docs/development.md) before changing the workflow.
@@ -156,9 +159,10 @@ reviewed new identity.
 
 Use the dedicated [SN observer/passband controller](experiments/sn-observer-passband/README.md) for its frozen conditional slice. Keep the faithful candidate blocked until event/frame/reduction and calibration-law gaps close; a passing distance or optical integral does not qualify a released likelihood.
 
-The [current campaign](experiments/lcdm-campaign/README.md) is a diagnostic
-source/dependency snapshot serving Irreducible's sole active roadmap, not a
-second development plan. Its bounded thermal DESI controller has its own
+The [campaign](experiments/lcdm-campaign/README.md) is a historical diagnostic
+source/dependency snapshot informing the [sole local roadmap](docs/roadmap.md),
+not a second development plan; its frozen campaign.json remains historical.
+Its bounded thermal DESI controller has its own
 reviewed consumer/build identity and keeps the full-model packet blocked.
 Require exact request, model/order, native policy/status and reference identities
 before comparison. Retain high-precision reference differences at their declared

@@ -11,7 +11,7 @@ records removal totals, exact audit pins and retained exceptions.
 Git stores experiment descriptions, configuration, orchestration/visualization
 source and small provenance manifests. `data/`, `downloads/`, `results/`, `runs/`,
 `simulation/`, `simulations/`, `notebooks/` and `.work/` are ignored. The repository
-checker rejects tracked generated products and caps the public tree at 2.25 MiB
+checker rejects tracked generated products and caps the public tree at 2.5 MiB
 and each packet at eight source files. Change a budget only with an explicit
 review of the storage design. `.gitignore` alone cannot untrack
 previously committed files. Never use `git add -f` for those stores.
@@ -164,3 +164,20 @@ storage durable or establish redistribution rights.
 
 The [2026-10-08 three-project preservation account](preservation-2026-10-08.md)
 records the private archive/catalog pins, classification and verified restore route.
+
+## 2026-10-09 source-only roadmap allowance
+
+The audited tree at `bc5de0da41e8136dfe9b4852f3a792692d556e73` contained
+2,359,164 source bytes against the 2.25 MiB (2,359,296-byte) allowance, leaving
+132 bytes. The requested durable roadmap and factual gap inventory, with coherent
+supersession of older operative paragraphs, measured 2,386,927 bytes before this
+allowance note: 27,631 bytes above the previous cap. The reviewed 2.5 MiB source
+allowance accommodates these concrete programme documents and their storage
+explanation. The boundary check still rejects an extra byte beyond the new cap.
+
+Generated products, third-party arrays/archives, ignored inputs/results/runtime
+receipts and other bulk evidence remain excluded from Git. Each packet still
+has at most eight public source files. No historical source-snapshot, attempt,
+request, compute, allocation, tolerance or numerical/scientific qualification
+budget changes. Exact immutable requests/models/SDKs/receipts keep their pins;
+use named S3 for useful bulk evidence and [roadmap.md](roadmap.md) for scheduling.
