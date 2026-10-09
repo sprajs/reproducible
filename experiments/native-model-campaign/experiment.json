@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "id": "native-model-campaign",
+  "status": "blocked",
+  "question": "What bounded synthetic expansion, growth, mass, lens and energy-transfer responses do six distinct newly compiled native physical models predict under their explicit contracts?",
+  "origin": {
+    "kind": "development_smoke",
+    "description": "Owner-authorized new native-model synthetic campaign; targeted source identities belong to installed engine and separate Prospector source review, not a reproduced observational paper."
+  },
+  "assumptions": [
+    "No observational data, fit, score, prior or posterior.",
+    "Quintessence finite scalar anchor is not an attractor or CPL fluid.",
+    "DGP dust growth is quasistatic and carries self-accelerating ghost caveat, not complete perturbations.",
+    "NFW supplied lens geometry and Hernquist supplied G are distinct conditional static models.",
+    "DCDM H_i is finite-anchor inverse seconds, not H0; daughters massless and no perturbations.",
+    "Curved FLRW distances retain source-compatible nonflat geometry, not background-to-lens inference."
+  ],
+  "limitations": [
+    "Dedicated native C++ SDK controller; generic runner has no registered operation for this campaign.",
+    "Synthetic assumptions and controls do not qualify observations or inference.",
+    "Native empirical local diagnostics and finite refinement agreement do not certify global error bounds."
+  ],
+  "inputs": [],
+  "execution": null,
+  "blockers": [
+    "Generic single-request runner cannot execute this dedicated multi-model native SDK controller.",
+    "Observational model/data/likelihood/calibration contracts are intentionally absent."
+  ],
+  "request_sha256": "d4148b61f60e1bdf7b558bedeb8c8683128b3de16f56d238b70d5ae19ea9145f"
+}

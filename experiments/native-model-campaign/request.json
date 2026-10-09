@@ -1,0 +1,302 @@
+{
+  "coordinates": {
+    "broader": {
+      "a": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1
+      ],
+      "decaying_a": [
+        0.1,
+        0.15,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1
+      ],
+      "hernquist_radius_over_scale": [
+        0.1,
+        0.2,
+        0.3,
+        0.5,
+        0.75,
+        1,
+        1.5,
+        2,
+        3,
+        5,
+        7.5,
+        10
+      ],
+      "nfw_radius_mpc": [
+        0.01,
+        0.02,
+        0.03,
+        0.05,
+        0.075,
+        0.1,
+        0.15,
+        0.2,
+        0.3,
+        0.5,
+        0.75,
+        1,
+        2
+      ],
+      "z": [
+        0,
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.75,
+        1,
+        1.5,
+        2,
+        2.5,
+        3
+      ]
+    },
+    "quick": {
+      "a": [
+        0.25,
+        0.5,
+        0.75,
+        1
+      ],
+      "decaying_a": [
+        0.1,
+        0.2,
+        0.5,
+        1
+      ],
+      "hernquist_radius_over_scale": [
+        0.1,
+        0.5,
+        1,
+        2,
+        5,
+        10
+      ],
+      "nfw_radius_mpc": [
+        0.02,
+        0.05,
+        0.1,
+        0.2,
+        0.5,
+        1
+      ],
+      "z": [
+        0,
+        0.1,
+        0.5,
+        1,
+        2,
+        3
+      ]
+    }
+  },
+  "engine_revision": "775d9ab05fc4b14b128d7c895e31eabb90b282f5",
+  "expected_cases": 54,
+  "expected_rows": {
+    "broader": 630,
+    "quick": 280
+  },
+  "inference": null,
+  "limits": {
+    "address_bytes": 536870912,
+    "attempt_bytes": 33554432,
+    "jobs": 1,
+    "stdout_bytes": 16777216,
+    "threads": 1,
+    "wall_seconds": 300
+  },
+  "models": [
+    "quintessence",
+    "dgp",
+    "nfw",
+    "decaying-matter",
+    "curved-flrw",
+    "hernquist"
+  ],
+  "numerical_gate": {
+    "absolute_w_phi": 1e-05,
+    "density_mass_lens_relative": 1e-07,
+    "distance_absolute_mpc": 0.0001,
+    "relative_difference": 2e-06,
+    "scalar_absolute_floor": 1e-10,
+    "scope": "empirical default/refined policy differences only, no certified bound"
+  },
+  "observations": null,
+  "parameters": {
+    "curved-flrw": {
+      "h0_km_s_mpc": 70,
+      "omega_lambda": [
+        0.6,
+        0.7,
+        0.8
+      ],
+      "omega_m": 0.3,
+      "omega_r": 0
+    },
+    "decaying-matter": {
+      "daughter_radiation_fraction": 0.1,
+      "decay_rate_over_initial_hubble": [
+        0,
+        0.1,
+        0.5,
+        1
+      ],
+      "initial_hubble_per_second": 1e-16,
+      "initial_scale_factor": 0.1,
+      "lambda_fraction": 0,
+      "parent_fraction": 0.8,
+      "stable_matter_fraction": 0.1
+    },
+    "dgp": {
+      "h0_km_s_mpc": 70,
+      "omega_m0": [
+        0.2,
+        0.3,
+        0.4,
+        1
+      ]
+    },
+    "hernquist": {
+      "coupling_role": "supplied nominal constant; no uncertainty or asset qualification",
+      "gravitational_coupling_m3_kg_s2": 6.6743e-11,
+      "scale_radius_metres": [
+        1e+19,
+        3e+19
+      ],
+      "total_mass_kg": [
+        1e+40,
+        1e+41
+      ]
+    },
+    "nfw": {
+      "lens_distance_mpc": 1000,
+      "radius_s_mpc": [
+        0.1,
+        0.2,
+        0.4
+      ],
+      "rho_s_msun_mpc3": [
+        500000000000000.0,
+        1000000000000000.0,
+        2000000000000000.0
+      ],
+      "sigma_critical_msun_mpc2": 3000000000000000.0
+    },
+    "quintessence": {
+      "anchor_a": 1,
+      "h_anchor_km_s_mpc": 70,
+      "lambda": [
+        0,
+        0.4,
+        0.8
+      ],
+      "potential_fraction": 0.7,
+      "radiation_fraction": 0,
+      "signed_kinetic_fraction_root": 0
+    }
+  },
+  "profiles": {
+    "broader": "same models and conditioned parameters with denser coordinate samples",
+    "quick": "bounded fixed family parameter sweeps; coarse coordinate samples"
+  },
+  "qualifications": [
+    "No observational data, fit, score, prior or posterior.",
+    "Quintessence finite scalar anchor is not an attractor or CPL fluid.",
+    "DGP dust growth is quasistatic and carries self-accelerating ghost caveat, not complete perturbations.",
+    "NFW supplied lens geometry and Hernquist supplied G are distinct conditional static models.",
+    "DCDM H_i is finite-anchor inverse seconds, not H0; daughters massless and no perturbations.",
+    "Curved FLRW distances retain source-compatible nonflat geometry, not background-to-lens inference."
+  ],
+  "role": "synthetic_assumption_and_model_response",
+  "schema": "native-model-campaign-request/v1",
+  "sdk_pin": {
+    "build_id": "a8ed43e230655f39eafdad66a82aa949962d07f4f1a3796db420982cab72d9c5",
+    "build_manifest_sha256": "34bce63651700233847fb1b1e14e81ebca3f2fcd5e3bda8c0e405062750202e2",
+    "library_sha256": "657e4f8f6144f626f32883e705b5640571ad342870024d92d52a3985fddf1fed"
+  },
+  "units": {
+    "curved-flrw": {
+      "DA_Mpc": "Mpc",
+      "DC_Mpc": "Mpc",
+      "DL_Mpc": "Mpc",
+      "DM_Mpc": "Mpc",
+      "E": "dimensionless",
+      "H_km_s_Mpc": "km/s/Mpc",
+      "coordinate": "redshift"
+    },
+    "decaying-matter": {
+      "E_over_initial": "H/H_i",
+      "H_per_second": "s^-1",
+      "Omega_daughter": "dimensionless",
+      "Omega_parent": "dimensionless",
+      "Omega_stable": "dimensionless",
+      "continuity_residual": "dimensionless",
+      "coordinate": "scale_factor relative to finite supplied anchor",
+      "deceleration": "dimensionless",
+      "elapsed_initial_hubble_time": "H_i(t-t_i)",
+      "elapsed_seconds": "s",
+      "transfer_over_Hrho": "Q/(H rho_total)",
+      "w_total": "dimensionless"
+    },
+    "dgp": {
+      "D": "D/a->1 dimensionless",
+      "E": "dimensionless",
+      "H_km_s_Mpc": "km/s/Mpc",
+      "Omega_m": "dimensionless",
+      "coordinate": "scale_factor",
+      "f": "dlnD/dlna dimensionless",
+      "mu": "dimensionless"
+    },
+    "hernquist": {
+      "circular_speed_squared_m2_s2": "m^2/s^2",
+      "coordinate": "physical metres",
+      "density_kg_m3": "kg/m^3",
+      "mass_enclosed_kg": "kg",
+      "potential_m2_s2": "m^2/s^2",
+      "radial_acceleration_m_s2": "m/s^2 signed outward",
+      "tidal_radial_s2": "s^-2",
+      "tidal_tangential_s2": "s^-2"
+    },
+    "nfw": {
+      "Delta_Sigma_Msun_Mpc2": "Msun/Mpc^2",
+      "Sigma_Msun_Mpc2": "Msun/Mpc^2",
+      "alpha_radians": "radians",
+      "coordinate": "physical Mpc",
+      "gamma_t": "dimensionless",
+      "kappa": "dimensionless",
+      "mass_enclosed_Msun": "Msun",
+      "mean_Sigma_Msun_Mpc2": "Msun/Mpc^2"
+    },
+    "quintessence": {
+      "DL_Mpc": "Mpc",
+      "DM_Mpc": "Mpc",
+      "E": "dimensionless",
+      "H_km_s_Mpc": "km/s/Mpc",
+      "Omega_m": "dimensionless",
+      "Omega_phi": "dimensionless",
+      "Omega_r": "dimensionless",
+      "constraint_residual": "dimensionless",
+      "coordinate": "scale_factor",
+      "w_phi": "dimensionless"
+    }
+  }
+}
