@@ -24,7 +24,7 @@ THREAD_ENV = {name: "1" for name in
 os.environ.update(THREAD_ENV)
 
 
-class ResourceInterrupted(RuntimeError):
+class ResourceInterrupted(BaseException):
     pass
 
 
@@ -178,6 +178,7 @@ class Evaluator:
                 raise ValueError("nonfinite target inside admitted prior support")
             row.update(status="completed", likelihood=likelihood, logprior=prior,
                        prior_terms=prior_terms, logtarget=target, derived=theory["derived"],
+                       input_parameters=theory["input_parameters"],
                        theory_seconds=theory["seconds"], theory_cache_reused=theory["cache_reused"])
             self.event(row)
             return row
@@ -241,7 +242,8 @@ def execute(args):
             pins.append(absolute)
         bbn = {**contract["bbn_table"], "path": str(Path(compiled["source_root"]) / contract["bbn_table"]["path"])}
         score.checked_file(bbn, deadline)
-        contract = {**contract, "_resolved_bbn_path": bbn["path"]}
+        contract = {**contract, "_resolved_bbn_path": bbn["path"],
+                    "_resolved_class_source_root": compiled["source_root"]}
         record["resolved_bbn_table"] = bbn
         planck = runtime["planck"]
         roots = [Path(planck["plc_root"]) / relative for _, relative in score.PRODUCTS]
@@ -334,8 +336,20 @@ def supervise(command, attempt, limits):
         finally:
             code = child.wait()
             status = terminal_status(code, failure)
+            worker_status = None
+            worker_record = attempt / "attempt.json"
+            if worker_record.exists() and worker_record.stat().st_size <= 2097152:
+                try:
+                    worker_status = json.loads(worker_record.read_bytes()).get("status")
+                except (ValueError, UnicodeError):
+                    pass
+            if status == "worker_refused" and worker_status in {
+                    "numerical_refused", "likelihood_unsupported", "software_refused",
+                    "resource_interrupted", "user_interrupted"}:
+                status = worker_status
             terminal = {"schema": "planck-primary-supervisor-terminal/v1", "status": status,
                         "worker_returncode": code, "resource_limit": failure,
+                        "worker_status": worker_status,
                         "elapsed_seconds": time.monotonic()-started,
                         "worker_attempt_record_exists": (attempt / "attempt.json").exists(),
                         "inference_qualified": False}

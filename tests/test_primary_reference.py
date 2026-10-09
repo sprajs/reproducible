@@ -48,6 +48,24 @@ class PrimaryReferenceTest(unittest.TestCase):
                             (adapter.LikelihoodUnsupported("x", {}), "likelihood_unsupported")]:
             self.assertEqual(controller.refusal_status(exc), status)
 
+    def test_resource_interrupt_survives_actual_adapter_path(self):
+        class InterruptedClass:
+            def set(self, _):
+                pass
+            def compute(self):
+                raise controller.ResourceInterrupted("actual CLASS call deadline")
+            def struct_cleanup(self):
+                pass
+            def empty(self):
+                pass
+        contract = {"bounds": {name: [0, 100] for name in adapter.COORDINATES},
+                    "class_fixed": {"YHe": "BBN", "sBBN file": "/explicit/pinned/table"},
+                    "production_policy": "base", "numerical_policies": {"base": {}}}
+        theory = adapter.ClassOwner(types.SimpleNamespace(Class=InterruptedClass), contract)
+        with self.assertRaises(controller.ResourceInterrupted) as caught:
+            theory.evaluate([.022, .12, 67, 3, .96, .05, 1])
+        self.assertEqual(controller.refusal_status(caught.exception), "resource_interrupted")
+
     def test_native_hung_child_is_killed_reaped_and_recorded(self):
         # A native pause never returns to Python to deliver a Python handler.
         script = "import ctypes; ctypes.CDLL(None).pause()"

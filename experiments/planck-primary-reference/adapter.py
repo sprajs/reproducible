@@ -6,6 +6,7 @@ a native numerical refusal into a prior exclusion.
 """
 import math
 import time
+from pathlib import Path
 
 
 COORDINATES = ("omega_b", "omega_cdm", "H0", "logA", "n_s", "tau_reio", "A_planck")
@@ -49,6 +50,9 @@ def class_parameters(values, contract, *, precision=None):
     fixed["A_s"] = math.exp(p["logA"]) * 1e-10
     if "_resolved_bbn_path" in contract:
         fixed["sBBN file"] = contract["_resolved_bbn_path"]
+    if "_resolved_class_source_root" in contract:
+        fixed["hyrec_path"] = str(Path(contract["_resolved_class_source_root"]) / "external/HyRec2020") + "/"
+        fixed["Galli_file"] = str(Path(contract["_resolved_class_source_root"]) / "external/heating/Galli_et_al_2013.dat")
     settings = contract["numerical_policies"][precision or contract["production_policy"]]
     if set(settings) & set(fixed):
         raise ValueError("numerical policy overwrites physical parameter")
@@ -99,6 +103,7 @@ class ClassOwner:
             if any(not math.isfinite(v) for v in derived.values()):
                 raise ValueError("finite CLASS derived state required")
             result = {"status": "completed", "spectra": spectra, "derived": derived,
+                      "input_parameters": dict(self.owner.pars),
                       "seconds": time.monotonic() - started, "cache_reused": False}
             self.cached = key, result
             return result
