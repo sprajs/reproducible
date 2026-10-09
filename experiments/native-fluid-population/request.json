@@ -1,0 +1,128 @@
+{
+  "schema": "compiled-native-fluid-population-request/v1",
+  "engine_revision": "9f51b53ded88230192f6b4298e6fe57e3b879a7b",
+  "sdk_pin": {
+    "build_manifest_sha256": "bbb5356dfe872e27d5639c9af67f4776a3f711043067a6608c0ba795bd0e0bcd",
+    "build_id": "4cbfac4bb440942529878d057d1e1c603e41a0b9d3669c226660653b05bb9b54",
+    "library_sha256": "787471bf09704cac18dd252765eb65eccce9be955ee029b593d6082296630ee2"
+  },
+  "scientific_role": "synthetic_background_and_collisionless_population_predictions",
+  "observations": null,
+  "inference": null,
+  "profiles": [
+    "quick",
+    "broader"
+  ],
+  "coordinates": {
+    "quick": {
+      "a": [1, 0.5, 0.2, 0.1, 0.05],
+      "radius_over_scale": [0, 0.1, 0.5, 1, 2, 5, 10],
+      "speed_over_native_escape": [0, 0.25, 0.5, 0.75, 0.9, 1, 1.001]
+    },
+    "broader": {
+      "a": [1, 0.8, 0.6, 0.5, 0.4, 0.3, 0.2, 0.15, 0.1, 0.075, 0.05],
+      "radius_over_scale": [0, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1, 1.5, 2, 3, 5, 7.5, 10],
+      "speed_over_native_escape": [0, 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.85, 0.9, 0.95, 1, 1.001]
+    }
+  },
+  "parameters": {
+    "chaplygin": {
+      "H0_km_s_Mpc": 70,
+      "ordinary_matter_fraction": 0.3,
+      "radiation_fraction": 0,
+      "a_s": [0, 0.3, 0.7, 1],
+      "alpha": [0, 0.5, 1]
+    },
+    "plummer_population": {
+      "M_kg": [1e+40, 1e+41],
+      "b_m": [1e+19, 3e+19],
+      "supplied_G_m3_kg_s2": 6.6743e-11
+    }
+  },
+  "policies": {
+    "chaplygin": {
+      "default_relative": 1e-09,
+      "default_absolute_mpc": 1e-07,
+      "refined_relative": 1e-11,
+      "refined_absolute_mpc": 1e-09
+    },
+    "plummer_population": {
+      "default_relative": 1e-10,
+      "refined_relative": 1e-12
+    }
+  },
+  "numerical_gate": {
+    "relative_difference": 2e-06,
+    "absolute_w_and_barotropic_slope": 1e-08,
+    "distance_absolute_mpc": 0.0001,
+    "exact_zero_absolute_floor": 1e-12,
+    "meaning": "finite empirical final-response comparisons, not certified error bounds"
+  },
+  "expected_cases": 32,
+  "expected_rows": {
+    "quick": 512,
+    "broader": 1608
+  },
+  "expected_radius_states": {
+    "quick": 56,
+    "broader": 112
+  },
+  "boundary_control": {
+    "q": 1,
+    "role": "retained native support boundary diagnostics; velocity outputs outside ordinary admitted-grid comparison",
+    "outside_q": 1.001,
+    "outside_role": "native outside-support empirical diagnostic admission and exactzero output, not certified support enclosure"
+  },
+  "reference_controls": [
+    "compiled FLRW exact GCG dust/vacuum/alpha-zero mapping",
+    "GCG future a2 deliberately refused outside documented domain",
+    "population negative speed refused",
+    "native outside-support diagnostic admission beyond inherited empirical energy error",
+    "separately pinned permanent engine independent integral/moment/Jeans tests"
+  ],
+  "units": {
+    "chaplygin": {
+      "a": "dimensionless",
+      "E": "dimensionless",
+      "H_km_s_Mpc": "km/s/Mpc",
+      "rho_fluid_over_anchor": "dimensionless",
+      "Omega_ordinary": "dimensionless",
+      "Omega_radiation": "dimensionless",
+      "Omega_fluid": "dimensionless",
+      "w_fluid": "dimensionless",
+      "one_plus_w_fluid": "dimensionless",
+      "formal_dp_de": "dimensionless formal barotropic derivative, not a qualified propagation law",
+      "w_total": "dimensionless",
+      "deceleration": "dimensionless",
+      "DC_Mpc": "Mpc",
+      "DA_Mpc": "Mpc",
+      "DL_Mpc": "Mpc"
+    },
+    "plummer_population": {
+      "radius_over_scale": "dimensionless",
+      "speed_over_native_escape": "dimensionless",
+      "density_kg_m3": "kg/m^3",
+      "Psi_m2_s2": "m^2/s^2",
+      "enclosed_mass_kg": "kg",
+      "projected_surface_density_kg_m2": "kg/m^2",
+      "escape_speed_m_s": "m/s",
+      "one_axis_variance_m2_s2": "m^2/s^2",
+      "projected_los_variance_m2_s2": "m^2/s^2",
+      "DF_kg_s3_m6": "kg s^3/m^6",
+      "vector_PDF_s3_m3": "s^3/m^3",
+      "speed_PDF_s_m": "s/m",
+      "binding_energy_m2_s2": "m^2/s^2"
+    }
+  },
+  "limits": {
+    "jobs": 1,
+    "wall_seconds": 300,
+    "address_bytes": 536870912,
+    "stdout_bytes": 16777216,
+    "attempt_bytes": 33554432
+  },
+  "model_ids": {
+    "chaplygin": "flat-GR-generalized-Chaplygin-unified-barotropic-fluid-ordinary-dust-radiation/v1",
+    "plummer_population": "self-gravitating-isotropic-collisionless-Plummer-mass-traces-tracer-SI/v1"
+  }
+}
