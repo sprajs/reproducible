@@ -181,6 +181,30 @@ def validate_contract(contract):
     return contract
 
 
+def pilot_admission(contract, configuration):
+    """Admit only discarded proposal work; this cannot earn a posterior."""
+    if (configuration.get("schema") != "discarded-primary-proposal-pilot/v1"
+            or configuration.get("purpose") != "discarded_provisional_proposal_pilot"
+            or configuration.get("posterior_qualified") is not False
+            or contract["candidate_identity"]["sha256"] != "b486e38f59e9561b6ee9ed1e32a3db85a2505fcdc77d2f1e214dfcf5670f16df"
+            or configuration.get("numerical_policy") != "reference1"):
+        raise ValueError("explicit provisional v2/ref1 discarded pilot required")
+    base = contract["limits"]
+    limits = configuration.get("limits")
+    if type(limits) is not dict or set(limits) != set(base):
+        raise ValueError("complete predeclared pilot resource bounds required")
+    maxima = {**base, "max_evaluations": 2048, "attempt_wall_seconds": 21600}
+    if any(type(v) is not int or not 0 < v <= maxima[k] for k,v in limits.items()):
+        raise ValueError("pilot resource policy exceeds reviewed ceilings")
+    chain = configuration.get("chain", {})
+    if (chain.get("engine") != "emcee-singleton-mh-t6"
+            or type(chain.get("raw_steps")) is not int
+            or not 1 <= chain["raw_steps"] < limits["max_evaluations"]
+            or "resume_state" in chain):
+        raise ValueError("bounded fresh discarded mature-MH pilot required")
+    return {**contract, "limits":limits, "production_policy":"reference1"}
+
+
 class Evaluator:
     """Sole physical support owner; native failures abort the caller."""
     def __init__(self, contract, theory, primary, journal, deadline, artifact_root=None):
@@ -270,6 +294,9 @@ class Evaluator:
 def execute(args):
     started = time.monotonic()
     contract = validate_contract(read_json(args.contract))
+    configuration = read_json(args.points) if args.mode == "pilot" else None
+    if configuration is not None:
+        contract = pilot_admission(contract, configuration)
     limits = contract["limits"]
     deadline = started + limits["attempt_wall_seconds"]
     attempt = Path(args.attempt).absolute()
@@ -358,6 +385,17 @@ def execute(args):
                     raise ValueError("ordered point-count resource bound")
                 record["points_identity"] = identity(args.points)
                 record["scores"] = [evaluator.score(p["values"], precision=p.get("policy")) for p in values]
+            elif args.mode == "pilot":
+                record["points_identity"] = identity(args.points)
+                record["pilot_configuration"] = configuration
+                record["interpretation"] = "discarded provisional ref1 proposal pilot; no posterior or precision-recipe admission"
+                inference = load("primary_provisional_inference", Path(__file__).with_name("inference.py"))
+                chain = dict(configuration["chain"])
+                expected_runtime = {"runtime":record["runtime"], "classy_runtime":record["classy_runtime"],
+                                    "candidate_identity":contract["candidate_identity"], "numerical_policy":"reference1"}
+                if chain.get("runtime_identity") != expected_runtime:
+                    raise ValueError("pilot chain physical/runtime identity differs")
+                record["pilot_chain"] = inference.run_independence_chain(evaluator, chain, attempt)
             else:
                 raise ValueError("inference execution requires separately reviewed numerical qualification")
         record["cleanup"] = clik.close_all()
@@ -508,13 +546,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("contract", "runtime", "classy-runtime", "attempt", "points"):
         parser.add_argument("--" + name, required=True)
-    parser.add_argument("--mode", choices=("points",), default="points")
+    parser.add_argument("--mode", choices=("points", "pilot"), default="points")
     parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.worker:
         execute(args)
     else:
         contract = validate_contract(read_json(args.contract))
+        if args.mode == "pilot":
+            contract = pilot_admission(contract, read_json(args.points))
         attempt = Path(args.attempt).absolute()
         if not attempt.is_relative_to(ROOT / "results") or any(p.is_symlink() for p in attempt.parents):
             raise ValueError("fresh nonsymlink ignored results path required")

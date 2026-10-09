@@ -22,6 +22,28 @@ adapter = controller.adapter
 
 
 class PrimaryReferenceTest(unittest.TestCase):
+    def test_provisional_pilot_cannot_admit_production_or_unbounded_work(self):
+        import copy
+        contract = json.loads((PATH.parent / "contract-v2.json").read_text())
+        configuration = {"schema":"discarded-primary-proposal-pilot/v1",
+            "purpose":"discarded_provisional_proposal_pilot", "posterior_qualified":False,
+            "numerical_policy":"reference1", "limits":{**contract["limits"],
+                "max_evaluations":256, "attempt_wall_seconds":7200},
+            "chain":{"engine":"emcee-singleton-mh-t6", "raw_steps":128}}
+        admitted = controller.pilot_admission(contract,configuration)
+        self.assertEqual(admitted["production_policy"], "reference1")
+        self.assertEqual(contract["production_policy"], "cl-permille")
+        for field,value in [("posterior_qualified",True),("purpose","production"),
+                            ("numerical_policy","default")]:
+            changed=copy.deepcopy(configuration);changed[field]=value
+            with self.assertRaises(ValueError):controller.pilot_admission(contract,changed)
+        for field,value in [("max_evaluations",2049),("attempt_wall_seconds",21601),
+                            ("address_bytes",True),("file_bytes",134217729)]:
+            changed=copy.deepcopy(configuration);changed["limits"][field]=value
+            with self.assertRaises(ValueError):controller.pilot_admission(contract,changed)
+        changed=copy.deepcopy(configuration);changed["chain"]["resume_state"]={}
+        with self.assertRaises(ValueError):controller.pilot_admission(contract,changed)
+
     def test_normalization_requires_exact_admitted_v2_proof(self):
         import copy
         root = PATH.parent
