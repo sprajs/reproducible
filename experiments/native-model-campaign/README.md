@@ -101,3 +101,48 @@ and selected byte is retained. The pinned scientific source is
 95f9b1f3d933132b7fb82c031b38b37d6ee116a2; the installed SDK build and library
 identities in request.json remain unchanged. No downloaded paper originals or
 rights-unverified excerpts enter this selection.
+
+The separate targeted source-review metadata archive is
+`s3://research-data-436908790672-eu-west-2/reproducible/handoffs/prospector/native-model-source-review-20261009t0158z/versions/6755d334fd803372ea14336376c6a0446f083af9c487aa0a6daa21b7588e51fa/manifest.json`,
+SHA256 `a79ff9946a889a95c6867e0e5e5c77ec9b91c6765ee2aa3921d01ccfe10c91b8`,
+VersionId `FunxAcCVvU_b8.pG88ru0HWlZTam5OjM`, format
+`research-named-manifest/v1`. Prospector PR39 merged as 0bec0466; targeted
+source inspection and acquisition failures are distinct from native numerical
+qualification. Raw papers and copied excerpts retain unresolved redistribution
+rights and are excluded from the campaign archive.
+
+Recovery on 2026-10-09 supersedes the earlier bulk-persistence blocker. Four
+failed publication calls and the observed write-path HTTP 503 remain retained;
+a subsequent canonical ambient-credential retry published the **same immutable
+92-file selection**, with exact-version byte checks for every object before the
+completion manifest. The completed archive is
+`s3://research-data-436908790672-eu-west-2/reproducible/experiments/native-model-campaign/attempts/20261009t021004z-60250b32e036/versions/7b48170dbd06911be368714c1b133b1fa814c9c554c4737b5bd5676a6f11631b/manifest.json`,
+SHA256 `d731c2c8f830064ebb487947e7b10eb54cb910e5b32b2c8c7df54d06b8926ccf`,
+VersionId `12hP7F9vJUUS586pkC7WQlJXWuaNztT0`, format
+`research-named-manifest/v1`.
+
+A fresh-directory exact-version pull recovered all 92 files (10,545,338 bytes);
+comparison with the complete original selection found zero byte differences,
+independently rechecked by the reviewer. Using the restored plot source and
+native response JSON, separate-directory replay reproduced both corrected PNGs
+byte-identically: quick SHA256
+`782781edb180f7f419ddb80100ec7c236cead4d98ecd556b74e3e25416117832`, broader
+`a93b4d09014ec47dd4948b9effc95fcda2ac71e0a27faaf29364252bd4bbdfd3`.
+Original SVGs were restored identically; regenerated SVG metadata/IDs are not
+claimed identical. These are storage and display-recovery checks. The scientific
+SDK/source identity, frozen budgets, all refused outputs and aggregate
+`rejected_or_incomplete` numerical qualification remain unchanged. Locals and
+original active worktrees are retained; no eviction occurred.
+
+The separately published recovery-closure handoff preserves the failed storage
+logs, write-path diagnostic, successful publication pin, full restoration
+comparison and plot-replay receipts (12 files, 29,284 bytes):
+`s3://research-data-436908790672-eu-west-2/reproducible/handoffs/reproducible/native-model-campaign-recovery-20261009t022449z-19d3be2e49e8/versions/b2b9c94411b8fbdb4edfaaeb0388bd33af5b1950a8efbc522528d1cb324f4045/manifest.json`,
+SHA256 `b0077ab4e640e45479f6686aa85ce51f75cd128db5b1179350edb9c25b25651a`,
+VersionId `L91SHKxGGqjo3M81LrgbkGcxIQrhU01L`, format
+`research-named-manifest/v1`. This handoff adds recovery evidence, not a new
+scientific run or changed qualification.
+
+The recovery-closure handoff was also pulled into a fresh directory: all 12
+files/29,284 bytes matched the original selection exactly, including retained
+failed-call stderr and the observed 503 diagnostic.
