@@ -143,7 +143,7 @@ def validate_contract(contract):
     if (set(identity) != {"repository", "revision", "path", "snapshot", "bytes", "sha256"}
             or identity["repository"] != "sprajs/prospector"
             or re.fullmatch(r"[0-9a-f]{40}", identity["revision"]) is None
-            or identity["snapshot"] != "candidate.json"
+            or identity["snapshot"] not in {"candidate.json", "candidate-v2.json"}
             or re.fullmatch(r"[0-9a-f]{64}", identity["sha256"]) is None):
         raise ValueError("exact immutable Prospector candidate identity required")
     snapshot = Path(__file__).parent / identity["snapshot"]

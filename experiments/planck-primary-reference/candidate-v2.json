@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "kind": "candidate_design",
+  "paper_ids": [
+    "arxiv:1807.06209v4",
+    "arxiv:1907.12875v2",
+    "arxiv:2503.14738v3"
+  ],
+  "idea_ids": [
+    "planck-conditioned-base-lcdm",
+    "bao-compressed-relative-ruler"
+  ],
+  "review_id": "2026-10-09-foundation-supported-primary-source-claims",
+  "readiness": "blocked",
+  "equations": [
+    {
+      "expression": "P_R(k)=A_s*(k/0.05 Mpc^-1)^(n_s-1); A_s=exp(logA)*1e-10",
+      "locator": "Planck VI Sec2.1 power law and pivot; project natural-log sampling coordinate",
+      "paper_id": "arxiv:1807.06209v4",
+      "definitions": "Dimensionless adiabatic scalar curvature power; all six cosmological coordinates vary.",
+      "domain": "Declared flat base-LCDM reference",
+      "status": "reviewed_transcription"
+    },
+    {
+      "expression": "N_ur=3.046-deg_ncdm*(T_ncdm/(4/11)^(1/3))^4; T_ncdm=.71611,deg_ncdm=1",
+      "locator": "Pinned CLASS input.c/background.c FD normalization",
+      "paper_id": "arxiv:1807.06209v4",
+      "definitions": "Reviewer-derived effective FD mapping for Planck source Neff3.046; exact nonthermal CAMB equivalence unproved.",
+      "domain": "Relativistic zero-chemical-potential FD pair; CLASS evolves the full massive energy density",
+      "status": "reviewer_derived"
+    },
+    {
+      "expression": "lnTarget=sum[lnL_Commander,lnL_SimAll,lnL_Pliklite]+lnPrior_project; Cl_effective=Cl_theory/A_planck^2",
+      "locator": "Planck V Sec3.3.4 Eqs38–39,Sec4; pinned official lklbs/plik_cmbonly",
+      "paper_id": "arxiv:1907.12875v2",
+      "definitions": "Gaussian map-calibration prior once in dA_planck; foreground marginalization already in Plik-lite.",
+      "domain": "Released product support; physical-prior rejection is distinct from numerical or table refusal",
+      "status": "reviewed_transcription"
+    }
+  ],
+  "assumptions": [
+    "All bounds and transforms are explicit new project choices; no marginal Planck summary is used as a prior.",
+    "Species,BBN,reionization,primordial,lensing/nonlinear and likelihood conditioning are frozen in the linked reference.",
+    "The consumer accepts exact candidate,reference and contract bytes and pins runtime,data and storage identities before execution.",
+    "The finite tested points do not prove whole-domain support; this candidate remains blocked until consumer admission and numerical/inference gates."
+  ],
+  "simplifications": [
+    "Exact Planck/CAMB nonthermal neutrino distribution and PArthENoPE1.1 grid/implementation equivalence are unproved.",
+    "Planck Table2 TT,TE,EE+lowE+lensing additionally uses full Plik foreground nuisance conditioning and a reconstructed-lensing likelihood.",
+    "DESI DR2 source CMB baseline PR4 CamSpec plus Planck+ACT reconstruction is a different target.",
+    "Numerical qualification, convergence and independent matched-target posterior reproduction remain open."
+  ],
+  "data_dependencies": [
+    {
+      "paper_id": "arxiv:1907.12875v2",
+      "kind": "Official released likelihood",
+      "role": "Commander+SimAll+Plik-lite primary target; exact restored product/build/storage pins owned by consumer."
+    },
+    {
+      "paper_id": "arxiv:2503.14738v3",
+      "kind": "Prospective full13 compressed BAO",
+      "role": "Joint admission remains blocked until dependence and source applicability are resolved."
+    }
+  ],
+  "unknowns": [
+    "Independent posterior reference/reproduction for this new exact target is unavailable.",
+    "Primary-CMB/DESI dependence is unbounded; compression fiducial companion details remain open.",
+    "No executable request or consumer acceptance of these new bytes is claimed in this handoff.",
+    "Restricted-prior boundary and expanded-prior sensitivity; original broad v1 cannot be recovered merely by relabeling v2."
+  ],
+  "verification_gates": [
+    "Consumer acceptance pins exact candidate,reference,contract,runtime and restored inputs.",
+    "Qualify the whole intended prior; retain numerical or released-table refusals. No hidden inner numerical domain or altered likelihood.",
+    "Official test-vector selfchecks need independently enforced tolerance, not merely printed residuals.",
+    "Independent optimization starts and sampling seeds; convergence,ESS,MCSE,boundary and predictive diagnostics. Independent matched-target reproduction remains separate.",
+    "Report raw likelihood,prior and posterior separately; preserve failed prefixes and eligible evidence with fresh restore/replay.",
+    "Commander calibrated Dl range and cubic derivative diagnostics; unsupported states refuse explicitly, never hidden truncation.",
+    "All64 cosmological corners x2 A_planck endpoints plus interior/spread numerical checks are a finite qualification design, not a universal mathematical support proof.",
+    "Report prior-boundary mass and supported expanded-prior sensitivity before broad-prior scientific conclusions."
+  ],
+  "falsification": "A source/order/unit/coordinate mismatch or failed frozen gate refuses that comparison. Preserve failures, and do not relax budgets, replace physics or hide numerical failures in prior exclusions.",
+  "consumer": {
+    "repository": "sprajs/reproducible",
+    "revision": "59ffc242b563eebbc46a0bf00f7de22428191b74",
+    "dirty": false,
+    "capability_status": "Inspected historical fixed-point CLASS and official primary-likelihood adapter. A new fully varied consumer is under development; acceptance is not claimed.",
+    "recipe_runner_status": "Reproducible owns a dedicated typed CLASS/official-clik consumer; no new executable request validated here."
+  },
+  "blockers": [
+    "Dedicated consumer acceptance and fully varied numerical/inference gates remain unearned."
+  ],
+  "executable_request": null,
+  "qualification": {
+    "numerically_executed": false,
+    "scientifically_qualified": false,
+    "reason": "Source-reviewed restricted v2 conditional target only. Finite consumer diagnostics motivate qualification; no numerical/inference acceptance or posterior execution of this identity."
+  },
+  "design_id": "candidate-class-planck-primary-six-parameter-v2",
+  "title": "Restricted fully varied CLASS primary six-parameter conditional reference v2",
+  "faithful_claim": "Fit the separately named restricted H0-flat six-cosmological-coordinate plus shared calibration v2 target. Its project prior is conditional and differs from immutable broad v1; retain all original likelihood support refusals and require whole intended v2-domain qualification.",
+  "minimal_test": {
+    "question": "Can this exact fully varied primary-CMB reference be implemented, qualified across its intended prior and independently reproduced?",
+    "observables": [
+      "Per-component official log-likelihoods",
+      "Exactly-once calibration prior and physical support",
+      "Joint six-cosmology and calibration posterior",
+      "Same-state helium,reionization,drag,lensed spectra and distances"
+    ],
+    "parameter_choices": {
+      "reference_id": "class-planck-primary-six-parameter-v2",
+      "measure": "Restricted v2 H0-flat project measure; exact bounds in bound consumer contract/reference, no change to physical model.",
+      "source_identity": "New effective CLASS FD/BBN2017/HyRec2020/HMcode2016 reference",
+      "consumer_contract": {
+        "coordinates": [
+          "omega_b",
+          "omega_cdm",
+          "H0",
+          "logA",
+          "n_s",
+          "tau_reio",
+          "A_planck"
+        ],
+        "bounds": {
+          "omega_b": [
+            0.018,
+            0.028
+          ],
+          "omega_cdm": [
+            0.08,
+            0.18
+          ],
+          "H0": [
+            50,
+            90
+          ],
+          "logA": [
+            2.8,
+            3.3
+          ],
+          "n_s": [
+            0.92,
+            1.03
+          ],
+          "tau_reio": [
+            0.02,
+            0.1
+          ],
+          "A_planck": [
+            0.975,
+            1.025
+          ]
+        },
+        "measure": "domega_b domega_cdm dH0 dlogA dn_s dtau_reio dA_planck",
+        "physical_indicator": "CLASS_Omega_Lambda_nonnegative",
+        "class_fixed": {
+          "T_cmb": 2.7255,
+          "N_ur": 2.0327983725164924,
+          "N_ncdm": 1,
+          "m_ncdm": 0.06,
+          "T_ncdm": 0.71611,
+          "deg_ncdm": 1.0,
+          "ksi_ncdm": 0.0,
+          "Omega_k": 0.0,
+          "Omega_fld": 0.0,
+          "Omega_scf": 0.0,
+          "YHe": "BBN",
+          "recombination": "HyRec",
+          "reio_parametrization": "reio_camb",
+          "reionization_exponent": 1.5,
+          "reionization_width": 0.5,
+          "helium_fullreio_redshift": 3.5,
+          "helium_fullreio_width": 0.5,
+          "P_k_ini type": "analytic_Pk",
+          "k_pivot": 0.05,
+          "alpha_s": 0.0,
+          "modes": "s",
+          "ic": "ad",
+          "gauge": "synchronous",
+          "output": "tCl,pCl,lCl,mPk",
+          "lensing": "yes",
+          "non linear": "hmcode",
+          "hmcode_version": "2016",
+          "feedback model": "emu_dmonly",
+          "l_max_scalars": 2508,
+          "sBBN file": "external/bbn/sBBN_2017.dat"
+        },
+        "bbn_table": {
+          "path": "external/bbn/sBBN_2017.dat",
+          "bytes": 11213,
+          "sha256": "b72607a3a2f9134130cb2c09c0140d4f68c5916962e83fc6740a664bd5b69ea5"
+        },
+        "calibration_prior": {
+          "kind": "truncated_normal_in_dA_planck",
+          "mean": 1.0,
+          "sigma": 0.0025,
+          "applications": 1
+        },
+        "likelihood_components": [
+          "commander_TT",
+          "simall_EE",
+          "plik_lite_TTTEEE"
+        ],
+        "lmax": 2508
+      }
+    },
+    "scope": "Primary CMB first. The full13 DESI extension requires separate source/dependence admission, not addition of conditional minima."
+  },
+  "source_references": [
+    {
+      "reference_id": "class-planck-primary-six-parameter-v2",
+      "path": "references/lcdm/class-planck-primary-six-parameter-v2.json",
+      "sha256": "9af4a7bcf0d5cb5bffc8e29d1650ec15ca21fc55f3068d68ff53753fa97b1bc9"
+    }
+  ],
+  "source_contracts": [
+    {
+      "contract_id": "foundation-supported-primary-and-joint-contract-v2",
+      "path": "register/contracts/foundation-supported-primary-and-joint-contract-v2.json",
+      "sha256": "156464ffd2d186485fee096dc5154a7e2e311817122bbc0848d20c96a4c37eb9"
+    }
+  ]
+}
