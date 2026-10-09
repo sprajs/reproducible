@@ -324,7 +324,8 @@ def score_planck(runtime, products, directory, owner, deadline, likelihood, scor
         score.disarm()
 
 
-def execute(runtime_path, attempt_path, profile, deadline_utc, *, planck=False):
+def execute(runtime_path, attempt_path, profile, deadline_utc, *, planck=False, input_root=None):
+    input_root = Path(ROOT if input_root is None else input_root).absolute()
     attempt = Path(attempt_path).absolute()
     require(".." not in attempt.parts, "invalid attempt path")
     for parent in reversed(attempt.parents):
@@ -336,6 +337,7 @@ def execute(runtime_path, attempt_path, profile, deadline_utc, *, planck=False):
     attempt.mkdir(mode=0o700)
     record = {"schema": "observational-cosmology-attempt/v1", "status": "failed",
               "runtime": None, "profile": profile, "models": {}, "errors": [],
+              "input_root": str(input_root),
               "probe_combination": None, "observations": "DESI DR2 released Gaussian compression",
               "gates": {"execution": "unassessed", "native_numerical": "unassessed",
                         "conditional_fit": "unassessed", "posterior": "not_requested",
@@ -352,6 +354,8 @@ def execute(runtime_path, attempt_path, profile, deadline_utc, *, planck=False):
     deadline = time.monotonic() + 180
     started = time.monotonic()
     try:
+        transport.path_without_symlinks(input_root)
+        require(input_root.is_dir() and not input_root.is_symlink(), "input root must be a regular directory")
         runtime, runtime_pin, raw_runtime = transport.load_json(runtime_path)
         record["runtime"] = runtime_pin
         deadline_time = datetime.datetime.fromisoformat(deadline_utc)
@@ -370,7 +374,7 @@ def execute(runtime_path, attempt_path, profile, deadline_utc, *, planck=False):
                 and candidate["kind"] == "candidate_design", "source candidate intake binding")
         transport.write_new(attempt / "candidate.snapshot.json", candidate_raw)
         record["runtime_before"] = verify_runtime(runtime, deadline)
-        data = bao.read_data(str(ROOT))
+        data = bao.read_data(str(input_root))
         selection = select_data(data, list(range(13)))
         record["selection"] = selection
         record["data_before"] = data["source_identities"]
@@ -448,7 +452,7 @@ def execute(runtime_path, attempt_path, profile, deadline_utc, *, planck=False):
         try:
             record["runtime_after"] = verify_runtime(runtime, deadline)
             record["source_after"] = source_state()
-            record["data_after"] = bao.read_data(str(ROOT))["source_identities"]
+            record["data_after"] = bao.read_data(str(input_root))["source_identities"]
             require(record.get("runtime_before") == record["runtime_after"]
                     and record.get("source_before") == record["source_after"]
                     and record.get("data_before") == record["data_after"], "terminal source/input drift")
@@ -474,12 +478,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--runtime", type=Path, required=True)
     parser.add_argument("--attempt", type=Path, required=True)
+    parser.add_argument("--input-root", type=Path, default=ROOT,
+                        help="Working root containing exact pinned data/bao inputs; no acquisition")
     parser.add_argument("--profile", choices=tuple(PROFILES), default="quick")
     parser.add_argument("--deadline-utc", required=True)
     parser.add_argument("--planck", action="store_true")
     args = parser.parse_args()
     result = execute(args.runtime.absolute(), args.attempt.absolute(), args.profile,
-                     args.deadline_utc, planck=args.planck)
+                     args.deadline_utc, planck=args.planck, input_root=args.input_root)
     print(json.dumps({"status": result["status"], "manifest": str(args.attempt.absolute() / "manifest.json"),
                       "errors": result["errors"]}, indent=2))
     raise SystemExit(0 if result["status"] == "completed" else 1)

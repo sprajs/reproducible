@@ -104,6 +104,66 @@ class ObservationalCosmologyTests(unittest.TestCase):
                 acquire.acquire(directory, opener=lambda *a, **kw: io.BytesIO(b"bad"))
             self.assertFalse((Path(directory) / acquire.bao.INPUTS[0]["relative_path"]).exists())
 
+    def test_separate_input_root_is_used_before_and_after_attempt(self):
+        # Synthetic route fixture; no CLASS run or observational score.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inputs = root / "restored"
+            inputs.mkdir()
+            runtime = root / "runtime.json"
+            runtime.write_text('{"class": {}}')
+            data = {"source_identities": [{"sha256": "fixture"}]}
+            deadline = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=2)).isoformat()
+            with mock.patch.object(controller, "source_state", return_value={}), \
+                    mock.patch.object(controller, "verify_runtime", return_value={}), \
+                    mock.patch.object(controller.bao, "read_data", return_value=data) as reader, \
+                    mock.patch.object(controller, "select_data", return_value={"fixture": True}), \
+                    mock.patch.object(controller, "class_case", side_effect=ValueError("fixture stops before physics")):
+                result = controller.execute(runtime, root / "attempt", "quick", deadline, input_root=inputs)
+            self.assertEqual(reader.call_args_list, [mock.call(str(inputs)), mock.call(str(inputs))])
+            self.assertEqual(result["input_root"], str(inputs))
+            self.assertEqual(result["data_before"], result["data_after"])
+            self.assertEqual(result["status"], "failed")
+            self.assertIn("fixture stops before physics", result["errors"][0]["message"])
+
+    def test_separate_input_root_changed_exact_release_bytes_are_refused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inputs = root / "restored"
+            originals = {}
+            for item in controller.bao.INPUTS:
+                target = inputs / item["relative_path"]
+                target.parent.mkdir(parents=True, exist_ok=True)
+                originals[target] = b"x" * item["bytes"]
+                target.write_bytes(originals[target])
+            runtime = root / "runtime.json"
+            runtime.write_text("{}")
+            deadline = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=2)).isoformat()
+            with mock.patch.object(controller, "source_state", return_value={}), \
+                    mock.patch.object(controller, "verify_runtime", return_value={}):
+                result = controller.execute(runtime, root / "attempt", "quick", deadline, input_root=inputs)
+            self.assertEqual(result["status"], "failed")
+            self.assertIn("consumed input hash identity differs", result["errors"][0]["message"])
+            self.assertNotIn("data_before", result)
+            for target, original in originals.items():
+                self.assertEqual(target.read_bytes(), original)
+
+    def test_input_root_admission_refuses_links_and_traversal_before_runtime(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inputs = root / "restored"
+            inputs.mkdir()
+            linked = root / "linked"
+            linked.symlink_to(inputs, target_is_directory=True)
+            deadline = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=2)).isoformat()
+            for index, invalid in enumerate((linked, inputs / ".." / "restored", root / "missing")):
+                with mock.patch.object(controller.transport, "load_json") as loader:
+                    result = controller.execute(root / "runtime.json", root / f"attempt-{index}",
+                                                "quick", deadline, input_root=invalid)
+                loader.assert_not_called()
+                self.assertEqual(result["status"], "failed")
+                self.assertTrue((root / f"attempt-{index}" / "manifest.json").is_file())
+
     def test_missing_runtime_attempt_retains_failure(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)
