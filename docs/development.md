@@ -71,7 +71,9 @@ archive. Its full-model packet stays blocked while named conditional controls
 run through the bounded controller. Preserve original partial/failure output,
 test admission adversarially, and review a fresh committed run before reporting
 numerical acceptance. The campaign records readiness and findings for the
-engine's sole roadmap; it does not schedule work or execute commands from JSON.
+[sole local roadmap](roadmap.md); its historical campaign.json does not schedule
+current work or execute commands from JSON. [Current gaps](gaps.md) is an evidence
+inventory, not a second queue.
 
 The [SDSS source reader](../experiments/sdss-released-observer-contract/README.md)
 has a dedicated structural route with no engine request. Review its exact

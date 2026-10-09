@@ -5,9 +5,10 @@ physics contracts support a faithful standard LambdaCDM reproduction. The full
 Planck model remains **blocked**. [campaign.json](campaign.json) freezes all
 nineteen questions, dependencies, references and missing contracts from the
 coordinator audit; [candidate.json](candidate.json) preserves the Prospector
-source design. This status snapshot serves the
-[sole active Irreducible roadmap](https://github.com/sprajs/irreducible/blob/main/docs/roadmap.md).
-It does not establish another work queue or promote proposed questions to findings.
+source design. Its historical questions and frozen active_plan field are superseded
+for scheduling by the [sole current Reproducible roadmap](../../docs/roadmap.md),
+coordinated with the other two repositories. The original campaign.json bytes,
+contracts, executed findings and pins remain intact; this snapshot is no work queue.
 
 Reproducible owns exact inputs, experiment transport, references and attempt
 records. Irreducible owns production physics. Prospector owns source review.

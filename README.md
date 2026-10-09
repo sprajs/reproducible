@@ -15,6 +15,11 @@ New physics belongs in Irreducible. Questions, data lineage, parameter choices,
 fitting orchestration and plots for a particular investigation belong here.
 A reviewed idea may remain blocked if its model, data or likelihood is missing.
 
+[The roadmap](docs/roadmap.md) is the sole active Reproducible programme,
+coordinated with Prospector and Irreducible. [Current gaps](docs/gaps.md) records
+actual experiment, dataset, likelihood and inference readiness. Older campaign
+and checkpoint priorities are superseded; their findings and immutable pins remain.
+
 ## A small packet for each experiment
 
 An experiment normally has four files under `experiments/<id>/`: a Markdown
@@ -89,8 +94,9 @@ Numerical success establishes neither a fit nor a posterior result. Follow the
 packet's native command and exact source/SDK/data pins.
 
 [The current reproduction campaign](experiments/lcdm-campaign/README.md) retains
-all nineteen source and native contracts as a diagnostic status snapshot for
-Irreducible's sole active roadmap. Its separate thermal DESI consumer tests
+all nineteen source and native contracts as a historical diagnostic snapshot
+informing [the current roadmap](docs/roadmap.md). Its separate thermal DESI
+consumer tests
 chosen massless and massive FD models with supplied drag against the same full
 13-row compression. Full Planck reproduction and observational qualification
 stay blocked; older packets and their SDK identities remain intact.

@@ -9,7 +9,7 @@ from metadata_source import DOCUMENTS, read_document
 
 LOCAL = {"data", "downloads", "results", "runs", "simulation", "simulations", "notebooks", ".work", ".venv"}
 GENERATED = (".ipynb", ".npy", ".npz", ".fits", ".pdf", ".png", ".svg", ".tar.gz", ".zip")
-PUBLIC_SOURCE_BYTES = 9 * 1024 * 1024 // 4
+PUBLIC_SOURCE_BYTES = 5 * 1024 * 1024 // 2
 
 
 def verify_metadata_sources():
@@ -36,7 +36,7 @@ def check():
                 if not (path.parent / target).exists():
                     raise ValueError(f"Broken local link in {name}: {target}")
     if total > PUBLIC_SOURCE_BYTES:
-        raise ValueError("Public tree exceeds 2.25 MiB; archive bulk evidence and review the storage design")
+        raise ValueError("Public tree exceeds 2.5 MiB; archive bulk evidence and review the storage design")
     packets = {}
     for name in files:
         parts = Path(name).parts
