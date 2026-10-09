@@ -188,3 +188,23 @@ runs exactly. The final source additionally restores the original selected-CLDF
 directory-tree gate; that structural gate and retained-product likelihood replay
 have separate receipts rather than rewriting any of these attempts. Durable
 archive status remains separate; no upload is implied by local records.
+
+2026-10-09: PR25 clean source `52aa10f6` passed its actual separate-input-root
+acceptance after exact-version historical S3 restoration of both full13 files;
+the catalog's named DESI entry itself remains acquisition-only. A fresh serial
+CLASS/PLC/SDK build preserved original scientific pins and recorded actual new
+executable hashes. S3 quick and independent upstream-acquired quick matched
+scientific values exactly. Optional broader retained the same data and changed
+only optimizer resolution. Actual quick H0/chi2 are 68.8331390311/10.6410517554
+(LCDM) and 66.6984504953/16.9570944841 (fixed-w PPF); broader values are
+68.8313494551/10.6410259197 and 66.6974207976/16.9570784500. Official vectors passed
+1e-6, full-output score differences were zero and both quick plots were inspected.
+
+The separately predeclared 14-case numerical sensitivity attempt is execution-
+complete but **rejected/incomplete**: fixed-w H0=75 source-supplied precision
+changes separate Planck logL by+0.29961458, exceeding its 0.2 budget; integration
+refinement has no exact common printed matter-k axes for the declared Pk check.
+Those failures remain distinct from the successful consumer and optimizer gates.
+No tolerance was weakened, posterior/joint score inferred or aggregate numerical
+bound certified. The [attached-runtime account](../../docs/s3-workflow-validation-2026-10-09.md#attached-runtime-validation-2026-10-09-utc)
+records exact builds, profiles, sensitivity settings and archive/recovery pins.
