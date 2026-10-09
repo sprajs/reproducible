@@ -5,7 +5,8 @@ catalog; [shared S3 storage](cloud-storage.md) retains historical snapshots acro
 machines. Local ignored directories are temporary scratch/cache. S3 holds all useful
 persistent data and full successful/failed/partial evidence; publish and retain
 exact manifest pins before ending or handing off work. See the named guide for
-checksum-gated local eviction.
+checksum-gated local eviction. The [2026-10-09 cleanup account](local-cleanup-2026-10-09.md)
+records removal totals, exact audit pins and retained exceptions.
 
 Git stores experiment descriptions, configuration, orchestration/visualization
 source and small provenance manifests. `data/`, `downloads/`, `results/`, `runs/`,
