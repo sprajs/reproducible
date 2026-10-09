@@ -181,8 +181,8 @@ mixed evidence files were admitted by dry run, individually read back by exact
 VersionId and content hashes, then the completion manifest was published last.
 This is a reconstructable selected evidence bundle, not the complete 767-file raw
 CLASS-table attempt; explicit omission/regeneration ancestry is retained within
-its provenance. Public input acquisitions remain lawful pinned routes rather
-than an assertion of redistribution rights.
+its provenance. Public input acquisitions retain pinned routes with redistribution rights
+unverified.
 
 - URI: `s3://research-data-436908790672-eu-west-2/reproducible/experiments/observational-cosmology/attempts/s3-portability-20261009t011242z-4a339d25d54d/versions/e03b5650ab666196190dfee1bad57718ecf9fed62b0f03de1a425d2917946252/manifest.json`
 - SHA256: `0dc9e2739e6dff4353b943f9224da1b2126f5776d83243b9f1d1a27bf8ed8697`
@@ -190,7 +190,7 @@ than an assertion of redistribution rights.
 
 The attached prepared runtime was activated with
 `source /workspace/.setup/activate.sh`; that environment-specific activation
-supplies prepared tools and restricted credentials without exposing their values.
+supplies prepared tool paths; restricted ambient credentials remained unchanged.
 A distinct build used the explicit local CMake3.31.6 path; scientific source pins
 remain in the preserved runtime record. New machine reconstruction starts with
 its prepared-tool activation, `storage_startup.py --ambient-credentials` and the
