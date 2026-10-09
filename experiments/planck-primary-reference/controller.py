@@ -240,6 +240,23 @@ class Evaluator:
             row.update(derived=theory["derived"], input_parameters=theory["input_parameters"],
                        theory_seconds=theory["seconds"], theory_cache_reused=theory["cache_reused"],
                        theory_artifact=artifact)
+            if "diagnostic_spectra" in theory:
+                path = Path(artifact["path"]).with_name(Path(artifact["path"]).name.replace("theory-", "unlensed-"))
+                order = ["TT", "EE", "TE", "phi_phi"]
+                raw = b"".join(struct.pack("<d", value) for name in order
+                               for value in theory["diagnostic_spectra"][name])
+                if path.exists():
+                    if bounded_bytes(path, self.contract["limits"]["file_bytes"]) != raw:
+                        raise ValueError("retained diagnostic spectrum identity changed")
+                else:
+                    with path.open("xb") as stream:
+                        stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+                row["diagnostic_artifact"] = {"path":str(path), "bytes":len(raw),
+                    "sha256":hashlib.sha256(raw).hexdigest(), "encoding":"IEEE754-binary64-little-endian",
+                    "spectra_order":order, "ell":[0,self.contract["lmax"]],
+                    "units":{"TT":"Cl_microkelvin_squared","EE":"Cl_microkelvin_squared",
+                             "TE":"Cl_microkelvin_squared","phi_phi":"dimensionless_Cl"},
+                    "usage":"raw/unlensed numerical attribution only; likelihood input unchanged"}
             self.event({**row, "status": "theory_completed"})
             likelihood = self.primary.evaluate(theory["spectra"], p["A_planck"])
             prior_terms = {name: float(owner.logpdf(value)) for name, owner, value in

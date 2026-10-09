@@ -105,6 +105,15 @@ class ClassOwner:
             result = {"status": "completed", "spectra": spectra, "derived": derived,
                       "input_parameters": dict(self.owner.pars),
                       "seconds": time.monotonic() - started, "cache_reused": False}
+            if record["policy"] == "ref2-lensing-attribution":
+                raw = self.owner.raw_cl(self.contract["lmax"])
+                diagnostic = {name.upper(): [float(x * scale) for x in raw[name]]
+                              for name in ("tt", "ee", "te")}
+                diagnostic["phi_phi"] = [float(x) for x in raw["pp"]]
+                if any(len(row) != self.contract["lmax"] + 1 or any(not math.isfinite(v) for v in row)
+                       for row in diagnostic.values()):
+                    raise ValueError("finite complete diagnostic raw CLASS spectra required")
+                result["diagnostic_spectra"] = diagnostic
             self.cached = key, result
             return result
         except Exception as exc:

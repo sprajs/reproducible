@@ -22,6 +22,30 @@ adapter = controller.adapter
 
 
 class PrimaryReferenceTest(unittest.TestCase):
+    def test_raw_attribution_reuses_native_state_without_altering_likelihood_spectra(self):
+        contract=json.loads((PATH.parent / "contract-v2.json").read_text())
+        contract["lmax"]=3
+        class Native:
+            Omega_nu=.001
+            def __init__(self):self.pars={};self.computed=[]
+            def set(self,p):self.pars=p
+            def compute(self,*a):self.computed.append(a)
+            def Omega_Lambda(self):return .7
+            def h(self):return .67
+            def rs_drag(self):return 147.
+            def get_current_derived_parameters(self,n):return {k:1. for k in n}
+            def lensed_cl(self,n):return {"ell":list(range(n+1)),**{k:[0.,0.,1.,2.] for k in ['tt','ee','bb','te']}}
+            def raw_cl(self,n):return {"ell":list(range(n+1)),**{k:[0.,0.,3.,4.] for k in ['tt','ee','te','pp']}}
+            def struct_cleanup(self):pass
+            def empty(self):pass
+        owner=adapter.ClassOwner(types.SimpleNamespace(Class=Native),contract)
+        result=owner.evaluate([.022,.12,67,3,.96,.05,1.],precision="ref2-lensing-attribution")
+        scale=(contract['class_fixed']['T_cmb']*1e6)**2
+        self.assertEqual(result['spectra']['TT'][2],scale)
+        self.assertEqual(result['diagnostic_spectra']['TT'][2],3*scale)
+        self.assertEqual(result['diagnostic_spectra']['phi_phi'][2],3.)
+        self.assertEqual(owner.owner.computed,[(["background"],),()])
+
     def test_normalization_requires_exact_admitted_v2_proof(self):
         import copy
         root = PATH.parent
