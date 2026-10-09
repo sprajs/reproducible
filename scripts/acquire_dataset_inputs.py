@@ -2,7 +2,8 @@
 """Acquire exact declared family inputs; preserve partial attempts and refuse changed bytes.
 
 Consumes a locally exact-version-verified research-resource/v1 family ledger.
-The deadline is checked between reads; each network read may take up to45 seconds.
+The deadline is checked between reads with a45-second network socket inactivity
+timeout; a slow trickle can overrun the soft deadline before a read returns.
 The aggregate transfer cap has one explicitly charged overflow-probe byte.
 An exact-cap valid input still receives an EOF probe; an overlong valid prefix
 is refused. Main execution stops acquisition once the base cap is exhausted.
@@ -105,7 +106,7 @@ def main():
     report = {'schema': 'dataset-acquisition-attempt/v1', 'catalog_pin': ledger['catalog_pin'],
               'family_ledger_sha256': digest(args.family_ledger), 'max_asset_bytes': args.max_asset_bytes,
               'max_total_bytes': args.max_total_bytes, 'assets': [],
-              'deadline_policy': 'soft180s inter-read deadline, network reads timeout45s',
+              'deadline_policy': 'soft180s inter-read deadline, socket inactivity timeout45s; no hard wall guarantee',
               'overflow_probe_allowance_bytes': 1, 'max_transfer_bytes_including_overflow_probe': args.max_total_bytes + 1, 'scientific_admission': 'not_performed',
               'rights': 'private preservation source review required; no redistribution claim'}
     consumed = 0
